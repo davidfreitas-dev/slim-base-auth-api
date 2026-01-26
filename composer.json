@@ -1,0 +1,65 @@
+{
+    "name": "davidfreitas.dev/slim-base-api",
+    "description": "Modern REST API with Slim Framework",
+    "type": "project",
+    "require": {
+        "php": "^8.4",
+        "beberlei/assert": "^3.3",
+        "firebase/php-jwt": "^6.10",
+        "monolog/monolog": "^3.5",
+        "php-di/php-di": "^7.0",
+        "phpmailer/phpmailer": "^7.0",
+        "ramsey/uuid": "^4.7",
+        "slim/psr7": "^1.6",
+        "slim/slim": "^4.12",
+        "symfony/validator": "^8.0",
+        "vlucas/phpdotenv": "^5.6"
+    },
+    "require-dev": {
+        "fakerphp/faker": "^1.23",
+        "friendsofphp/php-cs-fixer": "^3.92",
+        "phpunit/phpunit": "^10.5",
+        "rector/rector": "^2.3"
+    },
+    "autoload": {
+        "psr-4": {
+            "App\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "bin-dir": "vendor/bin"
+    },
+    "scripts": {
+        "start": "php -S localhost:8080 -t public",
+        "test": "phpunit --configuration tools/phpunit.xml",
+        "test:unit": "phpunit --configuration tools/phpunit.xml --testsuite Unit",
+        "test:integration": "phpunit --configuration tools/phpunit.xml --testsuite Integration",
+        "test:functional": "phpunit --configuration tools/phpunit.xml --testsuite Functional",
+        "test:coverage": "phpunit --configuration tools/phpunit.phpunit.xml --coverage-html tools/coverage",
+        "test:testdox": "phpunit --configuration tools/phpunit.xml --testdox",
+        "cs-check": "php-cs-fixer fix --config=tools/.php-cs-fixer.dist.php --dry-run --diff",
+        "cs-fix": "php-cs-fixer fix --config=tools/.php-cs-fixer.dist.php --verbose --allow-risky=yes",
+        "rector": "rector process --config=tools/rector.php",
+        "rector:dry": "rector process --config=tools/rector.php --dry-run"
+    },
+    "scripts-descriptions": {
+        "start": "Inicia o servidor de desenvolvimento embutido do PHP",
+        "test": "Executa todos os testes (Unit, Integration, Functional)",
+        "test:unit": "Executa apenas os testes unitários",
+        "test:integration": "Executa apenas os testes de integração",
+        "test:functional": "Executa apenas os testes funcionais (API)",
+        "test:coverage": "Executa os testes e gera relatório de cobertura em HTML",
+        "test:testdox": "Executa os testes com saída formatada (testdox)",
+        "cs-check": "Verifica o código sem fazer alterações (dry-run)",
+        "cs-fix": "Formata o código seguindo o padrão PSR-12",
+        "rector": "Executa refatorações automáticas com Rector",
+        "rector:dry": "Simula refatorações do Rector sem aplicar mudanças"
+    }
+}

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<phpunit xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
+         bootstrap="../config/bootstrap.php"
+         colors="true"
+         cacheDirectory=".phpunit.cache"
+         beStrictAboutOutputDuringTests="true"
+         failOnRisky="true"
+         stopOnError="true"
+         stopOnFailure="false">
+    <testsuites>
+        <testsuite name="Unit">
+            <directory>../tests/Unit</directory>
+        </testsuite>
+        <testsuite name="Integration">
+            <directory>../tests/Integration</directory>
+        </testsuite>
+        <testsuite name="Functional">
+            <directory>../tests/Functional</directory>
+        </testsuite>
+    </testsuites>
+
+    <php>
+        <!-- Set APP_ENV to testing for test runs -->
+        <env name="APP_ENV" value="testing" force="true"/>
+
+        <!-- Sobrescrever variáveis de ambiente para testes -->
+        <env name="DB_TEST_DRIVER" value="mysql" force="true"/>
+        <env name="DB_TEST_HOST" value="database_test" force="true"/>
+        <env name="DB_TEST_PORT" value="3306" force="true"/>
+        <env name="DB_TEST_NAME" value="slim_base_api_test_db" force="true"/>
+        <env name="DB_TEST_USER" value="test_user" force="true"/>
+        <env name="DB_TEST_PASS" value="test_resu" force="true"/>
+        <env name="DB_TEST_CHARSET" value="utf8mb4" force="true"/>
+
+        <!-- Mailer (MailHog) -->
+        <env name="MAIL_HOST" value="mailhog" force="true"/>
+        <env name="MAIL_PORT" value="1025" force="true"/>
+        <env name="MAIL_USERNAME" value="" force="true"/>
+        <env name="MAIL_PASSWORD" value="" force="true"/>
+        <env name="MAIL_ENCRYPTION" value="" force="true"/>
+        <env name="MAIL_FROM_EMAIL" value="no-reply@example.com" force="true"/>
+        <env name="MAIL_FROM_NAME" value="Test Sender" force="true"/>
+    </php>
+
+    <coverage/>
+
+    <source>
+        <include>
+            <directory>../src</directory>
+        </include>
+    </source>
+</phpunit>

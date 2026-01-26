@@ -1,0 +1,187 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Functional\Api\V1\Auth;
+
+use DateTimeImmutable;
+use Faker\Factory;
+use App\Domain\Entity\Role;
+use App\Domain\Entity\User;
+use App\Domain\Entity\Person;
+use App\Domain\ValueObject\CpfCnpj;
+use Tests\Functional\FunctionalTestCase;
+use Fig\Http\Message\StatusCodeInterface;
+use App\Domain\Repository\UserRepositoryInterface;
+use App\Domain\Repository\PersonRepositoryInterface;
+use App\Domain\Repository\PasswordResetRepositoryInterface;
+
+class ResetPasswordTest extends FunctionalTestCase
+{
+    private UserRepositoryInterface $userRepository;
+    private PersonRepositoryInterface $personRepository;
+    private PasswordResetRepositoryInterface $passwordResetRepository;
+    private \Faker\Generator $faker;
+
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->userRepository = $this->app->getContainer()->get(UserRepositoryInterface::class);
+        $this->personRepository = $this->app->getContainer()->get(PersonRepositoryInterface::class);
+        $this->passwordResetRepository = $this->app->getContainer()->get(PasswordResetRepositoryInterface::class);
+        $this->faker = Factory::create('pt_BR');
+    }
+
+    public function testResetPasswordWithValidTokenAndMatchingPasswordsReturnsOk(): void
+    {
+        // Arrange
+        $email = 'test@example.com';
+        $password = 'password123';
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $person = new Person(
+            name: 'testuser',
+            email: $email,
+            cpfcnpj: CpfCnpj::fromString($this->faker->cpf())
+        );
+        $person = $this->personRepository->create($person);
+
+        $role = new Role(
+            id: 1,
+            name: 'user',
+            description: 'User role',
+            createdAt: new DateTimeImmutable(),
+            updatedAt: new DateTimeImmutable()
+        );
+
+        $user = new User(
+            person: $person,
+            password: $hashedPassword,
+            role: $role,
+            isActive: true,
+            isVerified: true
+        );
+
+        $this->userRepository->create($user);
+
+        $this->sendRequest('POST', '/api/v1/auth/forgot-password', ['email' => $email]);
+        
+        $token = $this->getLatestPasswordResetTokenForUser($user->getId());
+
+        $newPassword = 'newPassword123';
+        $payload = [
+            'email' => $email,
+            'code' => $token,
+            'password' => $newPassword,
+            'password_confirm' => $newPassword,
+        ];
+
+        // Act
+        $response = $this->sendRequest('POST', '/api/v1/auth/reset-password', $payload);
+        $response->getBody()->rewind();
+        $body = $response->getBody()->getContents();
+
+        // Assert
+        $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
+        $responseData = json_decode($body, true);
+        $this->assertArrayHasKey('message', $responseData);
+        $this->assertEquals('Password reset successfully', $responseData['message']);
+
+        // Verify the password was actually changed
+        $updatedUser = $this->userRepository->findByEmail($email);
+        $this->assertTrue(password_verify($newPassword, $updatedUser->getPassword()));
+    }
+
+    public function testResetPasswordWithInvalidTokenReturnsBadRequest(): void
+    {
+        // Arrange
+        $newPassword = 'newPassword123';
+        $payload = [
+            'email' => 'test@example.com',
+            'token' => 'invalid-token',
+            'password' => $newPassword,
+            'password_confirm' => $newPassword,
+        ];
+
+        // Act
+        $response = $this->sendRequest('POST', '/api/v1/auth/reset-password', $payload);
+
+        // Assert
+        $this->assertEquals(StatusCodeInterface::STATUS_BAD_REQUEST, $response->getStatusCode());
+    }
+
+    public function testResetPasswordWithMismatchingPasswordsReturnsBadRequest(): void
+    {
+        // Arrange
+        $email = 'test2@example.com';
+        $password = 'password123';
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+
+        $person = new Person(
+            name: 'testuser2',
+            email: $email,
+            cpfcnpj: CpfCnpj::fromString($this->faker->cpf())
+        );
+        $person = $this->personRepository->create($person);
+
+        $role = new Role(
+            id: 1,
+            name: 'user',
+            description: 'User role',
+            createdAt: new DateTimeImmutable(),
+            updatedAt: new DateTimeImmutable()
+        );
+
+        $user = new User(
+            person: $person,
+            password: $hashedPassword,
+            role: $role,
+            isActive: true,
+            isVerified: true
+        );
+
+        $this->userRepository->create($user);
+
+        $this->sendRequest('POST', '/api/v1/auth/forgot-password', ['email' => $email]);
+
+        $token = $this->getLatestPasswordResetTokenForUser($user->getId());
+
+        $payload = [
+            'email' => $email,
+            'token' => $token,
+            'password' => 'newPassword123',
+            'password_confirm' => 'differentPassword',
+        ];
+
+        // Act
+        $response = $this->sendRequest('POST', '/api/v1/auth/reset-password', $payload);
+
+        // Assert
+        $this->assertEquals(StatusCodeInterface::STATUS_BAD_REQUEST, $response->getStatusCode());
+    }
+
+    /**
+     * Get the latest password reset token for a user directly from database.
+     */
+    private function getLatestPasswordResetTokenForUser(int $userId): string
+    {
+        $container = $this->app->getContainer();
+        $pdo = $container->get(\PDO::class);
+        
+        $stmt = $pdo->prepare(
+            'SELECT code FROM password_resets 
+             WHERE user_id = :user_id 
+             ORDER BY created_at DESC 
+             LIMIT 1'
+        );
+        
+        $stmt->execute(['user_id' => $userId]);
+        $result = $stmt->fetch(\PDO::FETCH_ASSOC);
+        
+        if (!$result) {
+            $this->fail("No password reset token found for user ID: {$userId}");
+        }
+        
+        return $result['code'];
+    }
+}

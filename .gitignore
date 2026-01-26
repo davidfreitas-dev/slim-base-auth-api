@@ -1,0 +1,52 @@
+# Composer Dependencies
+/vendor/
+
+# Environment file
+.env
+
+# IDE and editor directories
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# macOS files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows files
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Log files
+/logs/
+*.log
+
+# Cache Files
+/.phpunit.cache/
+/tools/.phpunit.cache/
+/.php-cs-fixer.cache
+/tools/.php-cs-fixer.cache
+/tools/coverage/
+
+# Security Keys
+/config/keys/
+*.pem
+
+# Docker volumes (optional - descomente se quiser ignorar)
+# /.docker/
+# /storage/
+
+# Temporary files
+/tmp/
+*.tmp
+*.temp
+
+# PHPUnit
+.phpunit.result.cache
+
+# Rector
+/tools/rector.cache/
