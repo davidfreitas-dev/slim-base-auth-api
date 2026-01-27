@@ -6,6 +6,7 @@ namespace Tests\Integration\Infrastructure\Persistence\Decorator;
 
 use App\Domain\Entity\Person;
 use App\Domain\Entity\User;
+use App\Domain\Entity\Role;
 use App\Domain\ValueObject\CpfCnpj;
 use App\Infrastructure\Persistence\Decorator\CachingUserRepository;
 use App\Infrastructure\Persistence\MySQL\PersonRepository;

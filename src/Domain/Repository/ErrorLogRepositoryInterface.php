@@ -39,6 +39,16 @@ interface ErrorLogRepositoryInterface
     public function findAll(int $page, int $perPage, ?string $severity, ?bool $resolved): array;
 
     /**
+     * Counts all error logs based on optional filters.
+     *
+     * @param string|null $severity Optional: Filter by severity level (e.g., 'ERROR', 'CRITICAL').
+     * @param bool|null   $resolved Optional: Filter by resolution status (true for resolved, false for unresolved).
+     *
+     * @return int The total number of error logs matching the criteria.
+     */
+    public function countAll(?string $severity, ?bool $resolved): int;
+
+    /**
      * Marks an error log as resolved.
      *
      * @param int $id               The ID of the error log to mark as resolved.

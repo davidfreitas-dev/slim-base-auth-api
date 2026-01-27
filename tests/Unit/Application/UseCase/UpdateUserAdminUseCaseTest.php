@@ -4,19 +4,22 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\UseCase;
 
-use App\Application\DTO\UpdateUserAdminRequestDTO;
-use App\Application\UseCase\UpdateUserAdminUseCase;
-use App\Domain\Entity\Person;
+use PDO;
+use Faker\Factory;
+use Tests\TestCase;
 use App\Domain\Entity\Role;
 use App\Domain\Entity\User;
-use App\Domain\Exception\NotFoundException;
+use App\Domain\Entity\Person;
+use App\Domain\ValueObject\CpfCnpj;
+use App\Application\DTO\UserResponseDTO;
 use App\Domain\Exception\ConflictException;
-use App\Domain\Repository\PersonRepositoryInterface;
+use App\Domain\Exception\NotFoundException;
+use PHPUnit\Framework\MockObject\MockObject;
+use App\Application\DTO\UpdateUserAdminRequestDTO;
 use App\Domain\Repository\RoleRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
-use PDO;
-use PHPUnit\Framework\MockObject\MockObject;
-use Tests\TestCase;
+use App\Application\UseCase\UpdateUserAdminUseCase;
+use App\Domain\Repository\PersonRepositoryInterface;
 
 class UpdateUserAdminUseCaseTest extends TestCase
 {
@@ -30,6 +33,8 @@ class UpdateUserAdminUseCaseTest extends TestCase
 
     private UpdateUserAdminUseCase $updateUserAdminUseCase;
 
+    private \Faker\Generator $faker;
+
     protected function setUp(): void
     {
         parent::setUp();
@@ -37,6 +42,7 @@ class UpdateUserAdminUseCaseTest extends TestCase
         $this->userRepository = $this->createMock(UserRepositoryInterface::class);
         $this->personRepository = $this->createMock(PersonRepositoryInterface::class);
         $this->roleRepository = $this->createMock(RoleRepositoryInterface::class);
+        $this->faker = Factory::create('pt_BR');
 
         $this->updateUserAdminUseCase = new UpdateUserAdminUseCase(
             $this->pdo,
@@ -48,28 +54,68 @@ class UpdateUserAdminUseCaseTest extends TestCase
 
     public function testShouldUpdateUserSuccessfully(): void
     {
-        $dto = new UpdateUserAdminRequestDTO(1, 'New Name', 'new@email.com', null, null, 'NewRole', true, true);
+        $userId = 1;
+        $newName = 'New Name';
+        $newEmail = 'new@email.com';
+        $newPhone = '11987654321';
+        $newCpfCnpj = $this->faker->cpf();
+        $newRoleName = 'NewRole';
+        $newIsActive = true;
+        $newIsVerified = true;
 
-        $personMock = $this->createMock(Person::class);
-        $personMock->method('getId')->willReturn(1);
-        $personMock->expects($this->once())->method('setName')->with('New Name');
-        $personMock->expects($this->once())->method('setEmail')->with('new@email.com');
+        $dto = new UpdateUserAdminRequestDTO(
+            userId: $userId,
+            name: $newName,
+            email: $newEmail,
+            phone: $newPhone,
+            cpfcnpj: $newCpfCnpj,
+            roleName: $newRoleName,
+            isActive: $newIsActive,
+            isVerified: $newIsVerified
+        );
 
-        $roleMock = $this->createMock(Role::class);
-        $this->roleRepository->method('findByName')->with('NewRole')->willReturn($roleMock);
+        $mockPerson = $this->createMock(Person::class);
+        $mockPerson->method('getId')->willReturn($userId);
+        $mockPerson->method('getName')->willReturn($newName); // Return new name
+        $mockPerson->method('getEmail')->willReturn($newEmail); // Return new email
+        $mockPerson->method('getPhone')->willReturn($newPhone); // Return new phone
+        $mockPerson->method('getCpfCnpj')->willReturn(CpfCnpj::fromString($newCpfCnpj)); // Return new CpfCnpj
+        $mockPerson->expects($this->once())->method('setName')->with($newName);
+        $mockPerson->expects($this->once())->method('setEmail')->with($newEmail);
+        $mockPerson->expects($this->once())->method('setPhone')->with($newPhone);
+        $mockPerson->expects($this->once())->method('setCpfCnpj')->with(CpfCnpj::fromString($newCpfCnpj));
 
-        $userMock = $this->createMock(User::class);
-        $userMock->method('getPerson')->willReturn($personMock);
-        $userMock->expects($this->once())->method('setRole')->with($roleMock);
-        $userMock->expects($this->once())->method('activate');
-        $userMock->expects($this->once())->method('markAsVerified');
+        $mockRole = $this->createMock(Role::class);
+        $mockRole->method('getName')->willReturn($newRoleName);
+        $this->roleRepository->method('findByName')->with($newRoleName)->willReturn($mockRole);
 
-        $this->userRepository->method('findById')->with(1)->willReturn($userMock);
+        $mockUser = $this->createMock(User::class);
+        $mockUser->method('getId')->willReturn($userId);
+        $mockUser->method('getPerson')->willReturn($mockPerson);
+        $mockUser->method('getRole')->willReturn($mockRole);
+        $mockUser->method('isActive')->willReturn($newIsActive);
+        $mockUser->method('isVerified')->willReturn($newIsVerified);
+        $mockUser->expects($this->once())->method('setRole')->with($mockRole);
+        $mockUser->expects($this->once())->method('activate');
+        $mockUser->expects($this->once())->method('markAsVerified');
+
+        $this->userRepository->method('findById')->with($userId)->willReturn($mockUser);
+        $this->personRepository->method('findByEmail')->with($newEmail)->willReturn(null);
+        $this->personRepository->method('findByCpfCnpj')->with($newCpfCnpj)->willReturn(null);
+        $this->personRepository->expects($this->once())->method('update')->with($mockPerson);
+        $this->userRepository->expects($this->once())->method('update')->with($mockUser)->willReturn($mockUser);
 
         $this->pdo->expects($this->once())->method('beginTransaction');
         $this->pdo->expects($this->once())->method('commit');
 
-        $this->updateUserAdminUseCase->execute($dto);
+        $result = $this->updateUserAdminUseCase->execute($dto);
+        $this->assertInstanceOf(UserResponseDTO::class, $result);
+        $this->assertEquals($userId, $result->id);
+        $this->assertEquals($newName, $result->name);
+        $this->assertEquals($newEmail, $result->email);
+        $this->assertEquals($newRoleName, $result->roleName);
+        $this->assertEquals($newIsActive, $result->isActive);
+        $this->assertEquals($newIsVerified, $result->isVerified);
     }
 
     public function testShouldThrowNotFoundExceptionForNonExistentUser(): void

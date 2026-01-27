@@ -142,8 +142,19 @@ class CreateUserAdminTest extends FunctionalTestCase
         $this->assertEquals(StatusCodeInterface::STATUS_CREATED, $response->getStatusCode());
         $this->assertEquals('success', $body['status']);
         $this->assertEquals('User created successfully.', $body['message']);
+        $this->assertArrayHasKey('data', $body);
+        $this->assertArrayHasKey('id', $body['data']);
+        $this->assertArrayHasKey('name', $body['data']);
+        $this->assertArrayHasKey('email', $body['data']);
+        $this->assertArrayHasKey('role_name', $body['data']);
+        $this->assertArrayHasKey('is_active', $body['data']);
+        $this->assertArrayHasKey('is_verified', $body['data']);
+
         $this->assertEquals($payload['email'], $body['data']['email']);
         $this->assertEquals($payload['name'], $body['data']['name']);
+        $this->assertEquals($payload['role'], $body['data']['role_name']);
+        $this->assertTrue($body['data']['is_active']);
+        $this->assertTrue($body['data']['is_verified']);
     }
 
     public function testCreateUserAsNonAdminReturnsForbidden(): void

@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\UseCase;
 
+use PDO;
+use Tests\TestCase;
 use App\Application\DTO\CreateUserAdminRequestDTO;
+use App\Application\DTO\UserResponseDTO;
 use App\Application\UseCase\CreateUserAdminUseCase;
 use App\Domain\Entity\Person;
 use App\Domain\Entity\Role;
@@ -15,22 +18,15 @@ use App\Domain\Repository\PersonRepositoryInterface;
 use App\Domain\Repository\RoleRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
 use App\Infrastructure\Security\PasswordHasher;
-use PDO;
 use PHPUnit\Framework\MockObject\MockObject;
-use Tests\TestCase;
 
 class CreateUserAdminUseCaseTest extends TestCase
 {
-    private \PHPUnit\Framework\MockObject\MockObject $pdo;
-
-    private \PHPUnit\Framework\MockObject\MockObject $personRepository;
-
-    private \PHPUnit\Framework\MockObject\MockObject $userRepository;
-
-    private \PHPUnit\Framework\MockObject\MockObject $roleRepository;
-
-    private \PHPUnit\Framework\MockObject\MockObject $passwordHasher;
-
+    private PDO&MockObject $pdo;
+    private PersonRepositoryInterface&MockObject $personRepository;
+    private UserRepositoryInterface&MockObject $userRepository;
+    private RoleRepositoryInterface&MockObject $roleRepository;
+    private PasswordHasher&MockObject $passwordHasher;
     private CreateUserAdminUseCase $createUserAdminUseCase;
 
     protected function setUp(): void
@@ -55,23 +51,49 @@ class CreateUserAdminUseCaseTest extends TestCase
     {
         $dto = new CreateUserAdminRequestDTO('Admin User', 'admin@test.com', 'password', null, null, 'Admin');
 
+        $userId = 1;
+        $userName = $dto->name;
+        $userEmail = $dto->email;
+        $userRoleName = $dto->roleName;
+        $userIsActive = true;
+        $userIsVerified = true;
+
         $this->personRepository->method('findByEmail')->willReturn(null);
 
-        $role = $this->createMock(Role::class);
-        $this->roleRepository->method('findByName')->with('Admin')->willReturn($role);
+        /** @var Role&MockObject $mockRole */
+        $mockRole = $this->createMock(Role::class);
+        $mockRole->method('getName')->willReturn($userRoleName);
+        $this->roleRepository->method('findByName')->with($userRoleName)->willReturn($mockRole);
 
-        $personMock = $this->createMock(Person::class);
-        $personMock->method('getId')->willReturn(1);
-        $this->personRepository->method('create')->willReturn($personMock);
+        /** @var Person&MockObject $mockPerson */
+        $mockPerson = $this->createMock(Person::class);
+        $mockPerson->method('getId')->willReturn($userId);
+        $mockPerson->method('getName')->willReturn($userName);
+        $mockPerson->method('getEmail')->willReturn($userEmail);
+        $this->personRepository->method('create')->willReturn($mockPerson);
 
-        $userMock = $this->createMock(User::class);
-        $this->userRepository->method('create')->willReturn($userMock);
+        /** @var User&MockObject $mockUser */
+        $mockUser = $this->createMock(User::class);
+        $mockUser->method('getId')->willReturn($userId);
+        $mockUser->method('getPerson')->willReturn($mockPerson);
+        $mockUser->method('getRole')->willReturn($mockRole);
+        $mockUser->method('isActive')->willReturn($userIsActive);
+        $mockUser->method('isVerified')->willReturn($userIsVerified);
+        $this->userRepository->method('create')->willReturn($mockUser);
+
+        $this->passwordHasher->expects($this->once())->method('hash')->willReturn('hashed_password');
 
         $this->pdo->expects($this->once())->method('beginTransaction');
         $this->pdo->expects($this->once())->method('commit');
 
         $result = $this->createUserAdminUseCase->execute($dto);
-        $this->assertInstanceOf(User::class, $result);
+        $this->assertInstanceOf(UserResponseDTO::class, $result);
+        $this->assertEquals($userId, $result->id);
+        $this->assertEquals($userName, $result->name);
+        $this->assertEquals($userEmail, $result->email);
+        $this->assertEquals($userRoleName, $result->roleName);
+        $this->assertEquals($userIsActive, $result->isActive);
+        $this->assertEquals($userIsVerified, $result->isVerified);
     }
 
     public function testShouldThrowConflictExceptionOnEmailInUse(): void
@@ -96,6 +118,7 @@ class CreateUserAdminUseCaseTest extends TestCase
         $this->expectException(\Exception::class);
         $dto = new CreateUserAdminRequestDTO('Admin User', 'admin@test.com', 'password', null, null, 'Admin');
 
+        /** @var Role&MockObject $role */
         $role = $this->createMock(Role::class);
         $this->roleRepository->method('findByName')->willReturn($role);
 

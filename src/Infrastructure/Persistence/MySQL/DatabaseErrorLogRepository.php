@@ -71,19 +71,6 @@ class DatabaseErrorLogRepository implements ErrorLogRepositoryInterface
         );
     }
 
-    public function markAsResolved(int $id, int $resolvedByUserId): bool
-    {
-        $sql = 'UPDATE error_logs SET resolved_at = NOW(), resolved_by = :resolved_by WHERE id = :id';
-        $stmt = $this->pdo->prepare($sql);
-
-        $stmt->execute([
-            'resolved_by' => $resolvedByUserId,
-            'id' => $id,
-        ]);
-
-        return $stmt->rowCount() > 0;
-    }
-
     public function findAll(int $page, int $perPage, ?string $severity, ?bool $resolved): array
     {
         $sql = 'SELECT id, severity, message, context, created_at, resolved_at, resolved_by FROM error_logs WHERE 1=1';
@@ -139,5 +126,42 @@ class DatabaseErrorLogRepository implements ErrorLogRepositoryInterface
         }
 
         return $errorLogs;
+    }
+
+    public function countAll(?string $severity, ?bool $resolved): int
+    {
+        $sql = 'SELECT COUNT(id) FROM error_logs WHERE 1=1';
+        $params = [];
+
+        if ($severity !== null) {
+            $sql .= ' AND severity = :severity';
+            $params[':severity'] = $severity;
+        }
+
+        if ($resolved !== null) {
+            if ($resolved) {
+                $sql .= ' AND resolved_at IS NOT NULL';
+            } else {
+                $sql .= ' AND resolved_at IS NULL';
+            }
+        }
+
+        $stmt = $this->pdo->prepare($sql);
+        $stmt->execute($params);
+
+        return (int) $stmt->fetchColumn();
+    }
+
+    public function markAsResolved(int $id, int $resolvedByUserId): bool
+    {
+        $sql = 'UPDATE error_logs SET resolved_at = NOW(), resolved_by = :resolved_by WHERE id = :id';
+        $stmt = $this->pdo->prepare($sql);
+
+        $stmt->execute([
+            'resolved_by' => $resolvedByUserId,
+            'id' => $id,
+        ]);
+
+        return $stmt->rowCount() > 0;
     }
 }

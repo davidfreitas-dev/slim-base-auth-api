@@ -4,11 +4,12 @@ declare(strict_types=1);
 
 namespace App\Application\UseCase;
 
+use App\Application\DTO\PasswordResetResponseDTO;
 use App\Application\DTO\ResetPasswordRequestDTO;
-use App\Domain\Entity\PasswordReset;
 use App\Domain\Exception\NotFoundException;
 use App\Domain\Repository\PasswordResetRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
+use App\Domain\ValueObject\Code;
 use App\Infrastructure\Security\JwtService;
 use App\Infrastructure\Security\PasswordHasher;
 
@@ -22,9 +23,9 @@ class ResetPasswordUseCase
     ) {
     }
 
-    public function execute(PasswordReset $passwordReset, ResetPasswordRequestDTO $dto): bool
+    public function execute(PasswordResetResponseDTO $passwordResetDto, ResetPasswordRequestDTO $dto): bool
     {
-        $user = $this->userRepository->findById($passwordReset->getUserId());
+        $user = $this->userRepository->findById($passwordResetDto->userId);
 
         if (!$user instanceof \App\Domain\Entity\User) {
             throw new NotFoundException('User not found');
@@ -38,7 +39,7 @@ class ResetPasswordUseCase
         $this->jwtService->invalidateAllUserRefreshTokens($user->getId());
 
         // Mark token as used
-        $this->passwordResetRepository->markAsUsed($passwordReset->getCode());
+        $this->passwordResetRepository->markAsUsed(Code::from($passwordResetDto->code)); // Convert DTO code string back to Code Value Object
 
         return true;
     }

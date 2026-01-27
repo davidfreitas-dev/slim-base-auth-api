@@ -121,7 +121,10 @@ class GetUserTest extends FunctionalTestCase
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
         $this->assertEquals('success', $body['status']);
         $this->assertEquals($user->getId(), $body['data']['id']);
-        $this->assertEquals($user->getEmail(), $body['data']['email']);
         $this->assertEquals($user->getPerson()->getName(), $body['data']['name']);
+        $this->assertEquals($user->getPerson()->getEmail(), $body['data']['email']);
+        $this->assertEquals($user->getRole()->getName(), $body['data']['role_name']);
+        $this->assertEquals($user->isActive(), $body['data']['is_active']);
+        $this->assertEquals($user->isVerified(), $body['data']['is_verified']);
     }
 }

@@ -64,10 +64,15 @@ class UserController
             );
 
             $this->validationService->validate($dto);
-            $person = $this->updateUserProfileUseCase->execute($dto);
+            $personResponseDto = $this->updateUserProfileUseCase->execute($dto);
 
             $responseData = [
-                'person' => $person->toArray(),
+                'id' => $personResponseDto->id,
+                'name' => $personResponseDto->name,
+                'email' => $personResponseDto->email,
+                'phone' => $personResponseDto->phone,
+                'cpfcnpj' => $personResponseDto->cpfcnpj,
+                'avatar_url' => $personResponseDto->avatarUrl,
             ];
 
             return $this->jsonResponseFactory->success($responseData, 'Profile updated successfully.');

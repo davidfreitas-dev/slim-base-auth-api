@@ -60,7 +60,7 @@ class ErrorLogController
         $errorLogId = (int)$args['id'];
         $errorLog = $this->getErrorLogDetailsUseCase->execute($errorLogId);
 
-        if (!$errorLog instanceof \App\Domain\Entity\ErrorLog) {
+        if (!$errorLog) {
             return $this->jsonResponseFactory->error(
                 'Error log not found',
                 null,

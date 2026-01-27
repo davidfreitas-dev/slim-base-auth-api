@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Application\UseCase;
 
+use App\Application\DTO\PersonResponseDTO;
 use App\Application\DTO\UpdateUserProfileRequestDTO;
 use App\Domain\Entity\Person;
 use App\Domain\Exception\NotFoundException;
 use App\Domain\Exception\ValidationException;
 use App\Domain\Repository\PersonRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
+use App\Domain\ValueObject\CpfCnpj;
 use Exception;
 use PDO;
 use Psr\Http\Message\UploadedFileInterface;
@@ -25,7 +27,7 @@ class UpdateUserProfileUseCase
     ) {
     }
 
-    public function execute(UpdateUserProfileRequestDTO $dto): Person
+    public function execute(UpdateUserProfileRequestDTO $dto): PersonResponseDTO
     {
         $user = $this->userRepository->findById($dto->userId);
         if (!$user instanceof \App\Domain\Entity\User) {
@@ -59,7 +61,7 @@ class UpdateUserProfileUseCase
             }
 
             if ($dto->cpfcnpj !== null) {
-                $sanitizedCpfCnpj = \preg_replace('/[^0-9]/', '', $dto->cpfcnpj);
+                $sanitizedCpfCnpj = CpfCnpj::fromString($dto->cpfcnpj);
                 // Check if CPF/CNPJ already exists for another person
                 $existingPerson = $this->personRepository->findByCpfCnpj($sanitizedCpfCnpj);
                 if ($existingPerson && $existingPerson->getId() !== $person->getId()) {
@@ -87,7 +89,14 @@ class UpdateUserProfileUseCase
                 \unlink($oldAvatarUrl);
             }
 
-            return $updatedPerson;
+            return new PersonResponseDTO(
+                id: $updatedPerson->getId(),
+                name: $updatedPerson->getName(),
+                email: $updatedPerson->getEmail(),
+                phone: $updatedPerson->getPhone(),
+                cpfcnpj: $updatedPerson->getCpfCnpj()?->value(),
+                avatarUrl: $updatedPerson->getAvatarUrl(),
+            );
         } catch (Exception $exception) {
             $this->pdo->rollBack();
 

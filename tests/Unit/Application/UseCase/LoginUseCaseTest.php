@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\UseCase;
 
 use App\Application\DTO\LoginRequestDTO;
+use App\Application\DTO\LoginResponseDTO;
 use App\Application\UseCase\LoginUseCase;
 use App\Domain\Entity\User;
 use App\Domain\Exception\AuthenticationException;
@@ -73,11 +74,11 @@ class LoginUseCaseTest extends TestCase
 
         $result = $this->loginUseCase->execute($dto);
 
-        $this->assertIsArray($result);
-        $this->assertArrayHasKey('access_token', $result);
-        $this->assertArrayHasKey('refresh_token', $result);
-        $this->assertArrayHasKey('expires_in', $result);
-        $this->assertArrayHasKey('token_type', $result);
+        $this->assertInstanceOf(LoginResponseDTO::class, $result);
+        $this->assertEquals('access_token', $result->accessToken);
+        $this->assertEquals('refresh_token', $result->refreshToken);
+        $this->assertEquals(3600, $result->expiresIn);
+        $this->assertEquals('Bearer', $result->tokenType);
     }
 
     public function testLoginWithInvalidEmailThrowsException(): void

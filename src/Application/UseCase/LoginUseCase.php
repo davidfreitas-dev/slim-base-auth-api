@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCase;
 
 use App\Application\DTO\LoginRequestDTO;
-use App\Domain\Enum\JsonResponseKey;
+use App\Application\DTO\LoginResponseDTO;
 use App\Domain\Exception\AuthenticationException;
 use App\Domain\Repository\UserRepositoryInterface;
 use App\Infrastructure\Security\JwtService;
@@ -20,7 +20,7 @@ class LoginUseCase
     ) {
     }
 
-    public function execute(LoginRequestDTO $dto): array
+    public function execute(LoginRequestDTO $dto): LoginResponseDTO
     {
         $user = $this->userRepository->findByEmail($dto->email);
 
@@ -39,11 +39,11 @@ class LoginUseCase
         $accessToken = $this->jwtService->generateAccessToken($user->getId(), $user->getPerson()->getEmail());
         $refreshToken = $this->jwtService->generateRefreshToken($user->getId());
 
-        return [
-            JsonResponseKey::ACCESS_TOKEN->value => $accessToken,
-            JsonResponseKey::REFRESH_TOKEN->value => $refreshToken,
-            JsonResponseKey::TOKEN_TYPE->value => 'Bearer',
-            JsonResponseKey::EXPIRES_IN->value => $this->jwtService->getAccessTokenExpire(),
-        ];
+        return new LoginResponseDTO(
+            accessToken: $accessToken,
+            refreshToken: $refreshToken,
+            tokenType: 'Bearer',
+            expiresIn: $this->jwtService->getAccessTokenExpire(),
+        );
     }
 }

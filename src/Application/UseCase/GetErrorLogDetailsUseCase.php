@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\UseCase;
 
+use App\Application\DTO\ErrorLogResponseDTO;
 use App\Domain\Entity\ErrorLog;
 use App\Domain\Repository\ErrorLogRepositoryInterface;
 
@@ -19,10 +20,24 @@ class GetErrorLogDetailsUseCase
      *
      * @param int $errorLogId The ID of the error log.
      *
-     * @return ErrorLog|null The ErrorLog entity or null if not found.
+     * @return ErrorLogResponseDTO|null The ErrorLog entity or null if not found.
      */
-    public function execute(int $errorLogId): ?ErrorLog
+    public function execute(int $errorLogId): ?ErrorLogResponseDTO
     {
-        return $this->errorLogRepository->findById($errorLogId);
+        $errorLog = $this->errorLogRepository->findById($errorLogId);
+
+        if (!$errorLog instanceof ErrorLog) {
+            return null;
+        }
+
+        return new ErrorLogResponseDTO(
+            id: $errorLog->getId(),
+            severity: $errorLog->getSeverity(),
+            message: $errorLog->getMessage(),
+            context: $errorLog->getContext(),
+            resolvedAt: $errorLog->getResolvedAt()?->format(\DateTimeImmutable::ATOM),
+            resolvedByUserId: $errorLog->getResolvedBy(),
+            createdAt: $errorLog->getCreatedAt(),
+        );
     }
 }

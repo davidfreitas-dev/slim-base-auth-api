@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Tests\Unit\Application\UseCase;
 
 use App\Application\DTO\ResetPasswordRequestDTO;
+use App\Application\DTO\PasswordResetResponseDTO;
 use App\Application\UseCase\ResetPasswordUseCase;
 use App\Domain\Entity\User;
 use App\Domain\Exception\NotFoundException;
@@ -48,10 +49,16 @@ class ResetPasswordUseCaseTest extends TestCase
             passwordConfirm: 'newPassword123'
         );
 
-
-        $passwordReset = $this->createMock(\App\Domain\Entity\PasswordReset::class);
-        $passwordReset->method('getUserId')->willReturn(1);
-        $passwordReset->method('getCode')->willReturn(\App\Domain\ValueObject\Code::from('123456'));
+        $passwordResetDto = $this->getMockBuilder(PasswordResetResponseDTO::class)
+                                 ->setConstructorArgs([
+                                     'id' => null,
+                                     'userId' => 1,
+                                     'code' => '123456',
+                                     'expiresAt' => (new \DateTimeImmutable())->format(\DateTimeImmutable::ATOM),
+                                     'usedAt' => null,
+                                     'ipAddress' => '127.0.0.1',
+                                 ])
+                                 ->getMock();
 
         $user = $this->createMock(User::class);
         $user->method('getId')->willReturn(1);
@@ -64,7 +71,7 @@ class ResetPasswordUseCaseTest extends TestCase
         $this->passwordHasher
             ->expects($this->once())
             ->method('hash')
-            ->with($dto->password) // Use DTO password
+            ->with($dto->password)
             ->willReturn('hashed-password');
         $this->userRepository
             ->expects($this->once())
@@ -77,9 +84,9 @@ class ResetPasswordUseCaseTest extends TestCase
         $this->passwordResetRepository
             ->expects($this->once())
             ->method('markAsUsed')
-            ->with($passwordReset->getCode()); // Call getCode on the mock
+            ->with(\App\Domain\ValueObject\Code::from($passwordResetDto->code)); // Pass Code Value Object
 
-        $result = $this->resetPasswordUseCase->execute($passwordReset, $dto); // Correct arguments
+        $result = $this->resetPasswordUseCase->execute($passwordResetDto, $dto);
 
         $this->assertTrue($result);
     }
@@ -93,8 +100,16 @@ class ResetPasswordUseCaseTest extends TestCase
             passwordConfirm: 'newPassword123'
         );
 
-        $passwordReset = $this->createMock(\App\Domain\Entity\PasswordReset::class);
-        $passwordReset->method('getUserId')->willReturn(999);
+        $passwordResetDto = $this->getMockBuilder(PasswordResetResponseDTO::class)
+                                 ->setConstructorArgs([
+                                     'id' => null,
+                                     'userId' => 999,
+                                     'code' => '123456',
+                                     'expiresAt' => (new \DateTimeImmutable())->format(\DateTimeImmutable::ATOM),
+                                     'usedAt' => null,
+                                     'ipAddress' => '127.0.0.1',
+                                 ])
+                                 ->getMock();
 
         $this->userRepository
             ->expects($this->once())
@@ -104,7 +119,7 @@ class ResetPasswordUseCaseTest extends TestCase
 
         $this->expectException(NotFoundException::class);
 
-        $this->resetPasswordUseCase->execute($passwordReset, $dto);
+        $this->resetPasswordUseCase->execute($passwordResetDto, $dto);
     }
 
 }

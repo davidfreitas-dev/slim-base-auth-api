@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Application\UseCase;
 
+use App\Application\DTO\UserProfileResponseDTO;
 use App\Domain\Exception\NotFoundException;
 use App\Domain\Exception\ValidationException;
 use App\Domain\Repository\PersonRepositoryInterface;
@@ -25,7 +26,7 @@ class UploadProfileImageUseCase
     ) {
     }
 
-    public function execute(int $userId, UploadedFileInterface $uploadedFile): string
+    public function execute(int $userId, UploadedFileInterface $uploadedFile): UserProfileResponseDTO
     {
         $user = $this->userRepository->findById($userId);
         if (!$user instanceof \App\Domain\Entity\User) {
@@ -59,7 +60,27 @@ class UploadProfileImageUseCase
         $person->setAvatarUrl($destinationPath);
         $this->personRepository->update($person);
 
-        return $destinationPath;
+        // Fetch the updated user to get the latest person data for the DTO
+        $updatedUser = $this->userRepository->findById($userId);
+        if (!$updatedUser instanceof \App\Domain\Entity\User) {
+            // This case should ideally not happen if update($person) was successful
+            throw new RuntimeException('Failed to retrieve updated user data.');
+        }
+
+        return new UserProfileResponseDTO(
+            id: $updatedUser->getId(), // Use $updatedUser->getId() for consistency and non-nullable type
+            name: $updatedUser->getPerson()->getName(),
+            email: $updatedUser->getPerson()->getEmail(),
+            phone: $updatedUser->getPerson()->getPhone(),
+            cpfcnpj: $updatedUser->getPerson()->getCpfCnpj()?->value(),
+            avatarUrl: $updatedUser->getPerson()->getAvatarUrl(),
+            isActive: $updatedUser->isActive(),
+            isVerified: $updatedUser->isVerified(),
+            roleId: $updatedUser->getRole()->getId(),
+            roleName: $updatedUser->getRole()->getName(),
+            createdAt: $updatedUser->getCreatedAt()->format('Y-m-d H:i:s'),
+            updatedAt: $updatedUser->getUpdatedAt()->format('Y-m-d H:i:s'),
+        );
     }
 
     private function validateUploadedFile(UploadedFileInterface $file): void

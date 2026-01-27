@@ -105,12 +105,18 @@ class UpdateProfileTest extends FunctionalTestCase
 
         // Assert
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
+        $this->assertEquals('success', $responseData['status']);
+        $this->assertEquals('Profile updated successfully.', $responseData['message']);
         $this->assertArrayHasKey('data', $responseData);
-        $this->assertArrayHasKey('person', $responseData['data']);
+        $this->assertArrayHasKey('id', $responseData['data']);
+        $this->assertArrayHasKey('name', $responseData['data']);
+        $this->assertArrayHasKey('email', $responseData['data']);
+        $this->assertArrayHasKey('phone', $responseData['data']);
+        $this->assertArrayHasKey('cpfcnpj', $responseData['data']);
+        $this->assertArrayHasKey('avatar_url', $responseData['data']);
 
-        // The response structure is data.person.name, not data.name
-        $this->assertEquals('Updated Name', $responseData['data']['person']['name']);
-        $this->assertEquals('updated.email@example.com', $responseData['data']['person']['email']);
+        $this->assertEquals('Updated Name', $responseData['data']['name']);
+        $this->assertEquals('updated.email@example.com', $responseData['data']['email']);
 
         // Verify in database
         $updatedUser = $this->userRepository->findById($this->user->getId());

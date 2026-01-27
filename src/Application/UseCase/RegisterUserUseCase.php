@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCase;
 
 use App\Application\DTO\RegisterUserRequestDTO;
+use App\Application\DTO\UserResponseDTO;
 use App\Domain\Entity\Person;
 use App\Domain\Entity\Role;
 use App\Domain\Entity\User;
@@ -38,7 +39,7 @@ class RegisterUserUseCase
     ) {
     }
 
-    public function execute(RegisterUserRequestDTO $dto): User
+    public function execute(RegisterUserRequestDTO $dto): UserResponseDTO
     {
         // Check if email already exists
         if ($this->personRepository->findByEmail($dto->email)) {
@@ -97,7 +98,13 @@ class RegisterUserUseCase
             $this->userVerificationRepository->create($userVerification);
 
             $this->pdo->commit();
-        } catch (Exception $exception) {
+        } catch (ConflictException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        } catch (ValidationException $e) {
+            $this->pdo->rollBack();
+            throw $e;
+        } catch (Exception $exception) { // Catch any other generic exceptions
             $this->pdo->rollBack();
 
             throw $exception;
@@ -113,6 +120,15 @@ class RegisterUserUseCase
             ),
         );
 
-        return $createdUser;
+        return new UserResponseDTO(
+            id: $createdUser->getId(),
+            name: $createdUser->getPerson()->getName(),
+            email: $createdUser->getPerson()->getEmail(),
+            roleName: $createdUser->getRole()->getName(),
+            isActive: $createdUser->isActive(),
+            isVerified: $createdUser->isVerified(),
+            phone: $createdUser->getPerson()->getPhone(),
+            cpfcnpj: $createdUser->getPerson()->getCpfCnpj() ? $createdUser->getPerson()->getCpfCnpj()->value() : null,
+        );
     }
 }

@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Application\UseCase;
 
 use App\Application\DTO\UpdateUserAdminRequestDTO;
+use App\Application\DTO\UserResponseDTO;
 use App\Domain\Entity\Role;
-use App\Domain\Entity\User;
 use App\Domain\Exception\ConflictException;
 use App\Domain\Exception\NotFoundException;
 use App\Domain\Repository\PersonRepositoryInterface;
@@ -26,7 +26,7 @@ class UpdateUserAdminUseCase
     ) {
     }
 
-    public function execute(UpdateUserAdminRequestDTO $dto): User
+    public function execute(UpdateUserAdminRequestDTO $dto): UserResponseDTO
     {
         $this->pdo->beginTransaction();
 
@@ -67,15 +67,29 @@ class UpdateUserAdminUseCase
             $this->personRepository->update($person);
 
             // Update user status (active/verified)
-            $dto->isActive ? $user->activate() : $user->deactivate();
-            $dto->isVerified ? $user->markAsVerified() : $user->markAsUnverified();
+            if ($dto->isActive !== null) {
+                $dto->isActive ? $user->activate() : $user->deactivate();
+            }
+
+            if ($dto->isVerified !== null) {
+                $dto->isVerified ? $user->markAsVerified() : $user->markAsUnverified();
+            }
 
             // Persist user changes
-            $this->userRepository->update($user);
+            $updatedUser = $this->userRepository->update($user);
 
             $this->pdo->commit();
 
-            return $this->userRepository->findById($dto->userId);
+            return new UserResponseDTO(
+                id: $updatedUser->getId(),
+                name: $updatedUser->getPerson()->getName(),
+                email: $updatedUser->getPerson()->getEmail(),
+                roleName: $updatedUser->getRole()->getName(),
+                isActive: $updatedUser->isActive(),
+                isVerified: $updatedUser->isVerified(),
+                phone: $updatedUser->getPerson()->getPhone(),
+                cpfcnpj: $updatedUser->getPerson()->getCpfCnpj() ? $updatedUser->getPerson()->getCpfCnpj()->value() : null,
+            );
         } catch (Exception $exception) {
             $this->pdo->rollBack();
 

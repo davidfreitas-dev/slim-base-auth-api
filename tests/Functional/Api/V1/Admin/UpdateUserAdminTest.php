@@ -128,8 +128,19 @@ class UpdateUserAdminTest extends FunctionalTestCase
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
         $this->assertEquals('success', $body['status']);
         $this->assertEquals('User updated successfully.', $body['message']);
+        $this->assertArrayHasKey('data', $body);
+        $this->assertArrayHasKey('id', $body['data']);
+        $this->assertArrayHasKey('name', $body['data']);
+        $this->assertArrayHasKey('email', $body['data']);
+        $this->assertArrayHasKey('role_name', $body['data']);
+        $this->assertArrayHasKey('is_active', $body['data']);
+        $this->assertArrayHasKey('is_verified', $body['data']);
+
+        $this->assertEquals($user->getId(), $body['data']['id']);
         $this->assertEquals($payload['email'], $body['data']['email']);
         $this->assertEquals($payload['name'], $body['data']['name']);
-        $this->assertEquals($payload['is_active'], $body['data']['is_active']);
+        $this->assertEquals($payload['role'], $body['data']['role_name']);
+        $this->assertEquals($payload['is_active'], $body['data']['is_active']);        
+        $this->assertTrue($body['data']['is_verified']);// is_verified should remain true as it's not part of the update payload here
     }
 }

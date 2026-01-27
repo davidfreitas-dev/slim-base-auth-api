@@ -39,9 +39,20 @@ class AdminController
         $dto = CreateUserAdminRequestDTO::fromArray($data);
 
         try {
-            $user = $this->createUserAdminUseCase->execute($dto);
+            $userResponseDto = $this->createUserAdminUseCase->execute($dto);
 
-            return $this->jsonResponseFactory->success($user->toArray(), 'User created successfully.', 201);
+            $responseData = [
+                'id' => $userResponseDto->id,
+                'name' => $userResponseDto->name,
+                'email' => $userResponseDto->email,
+                'phone' => $userResponseDto->phone,
+                'cpfcnpj' => $userResponseDto->cpfcnpj,
+                'role_name' => $userResponseDto->roleName,
+                'is_active' => $userResponseDto->isActive,
+                'is_verified' => $userResponseDto->isVerified,
+            ];
+
+            return $this->jsonResponseFactory->success($responseData, 'User created successfully.', 201);
         } catch (ConflictException | NotFoundException | ValidationException $e) {
             $this->logger->warning('Admin user creation failed: ' . $e->getMessage());
 
@@ -60,11 +71,9 @@ class AdminController
         $limit = isset($params['limit']) ? (int)$params['limit'] : 20;
         $offset = isset($params['offset']) ? (int)$params['offset'] : 0;
 
-        $users = $this->listUsersUseCase->execute($limit, $offset);
+        $userListResponseDTO = $this->listUsersUseCase->execute($limit, $offset);
 
-        $usersArray = \array_map(fn ($user) => $user->toArray(), $users);
-
-        return $this->jsonResponseFactory->success($usersArray);
+        return $this->jsonResponseFactory->success($userListResponseDTO);
     }
 
     public function getUser(Request $request, Response $response, array $args): Response
@@ -72,9 +81,20 @@ class AdminController
         $userId = (int)$args['id'];
 
         try {
-            $user = $this->getUserUseCase->execute($userId);
+            $userResponseDto = $this->getUserUseCase->execute($userId);
 
-            return $this->jsonResponseFactory->success($user->toArray());
+            $responseData = [
+                'id' => $userResponseDto->id,
+                'name' => $userResponseDto->name,
+                'email' => $userResponseDto->email,
+                'phone' => $userResponseDto->phone,
+                'cpfcnpj' => $userResponseDto->cpfcnpj,
+                'role_name' => $userResponseDto->roleName,
+                'is_active' => $userResponseDto->isActive,
+                'is_verified' => $userResponseDto->isVerified,
+            ];
+
+            return $this->jsonResponseFactory->success($responseData);
         } catch (NotFoundException $notFoundException) {
             return $this->jsonResponseFactory->fail(null, $notFoundException->getMessage(), 404);
         }
@@ -87,9 +107,20 @@ class AdminController
         $dto = UpdateUserAdminRequestDTO::fromArray($userId, $data);
 
         try {
-            $user = $this->updateUserAdminUseCase->execute($dto);
+            $userResponseDto = $this->updateUserAdminUseCase->execute($dto);
 
-            return $this->jsonResponseFactory->success($user->toArray(), 'User updated successfully.');
+            $responseData = [
+                'id' => $userResponseDto->id,
+                'name' => $userResponseDto->name,
+                'email' => $userResponseDto->email,
+                'phone' => $userResponseDto->phone,
+                'cpfcnpj' => $userResponseDto->cpfcnpj,
+                'role_name' => $userResponseDto->roleName,
+                'is_active' => $userResponseDto->isActive,
+                'is_verified' => $userResponseDto->isVerified,
+            ];
+
+            return $this->jsonResponseFactory->success($responseData, 'User updated successfully.');
         } catch (NotFoundException | ConflictException | ValidationException $e) {
             $this->logger->warning('Admin user update failed: ' . $e->getMessage());
 

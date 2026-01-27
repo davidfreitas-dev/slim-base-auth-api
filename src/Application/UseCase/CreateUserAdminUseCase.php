@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Application\UseCase;
 
 use App\Application\DTO\CreateUserAdminRequestDTO;
+use App\Application\DTO\UserResponseDTO;
 use App\Domain\Entity\Person;
 use App\Domain\Entity\Role;
 use App\Domain\Entity\User;
@@ -29,7 +30,7 @@ class CreateUserAdminUseCase
     ) {
     }
 
-    public function execute(CreateUserAdminRequestDTO $dto): User
+    public function execute(CreateUserAdminRequestDTO $dto): UserResponseDTO
     {
         // Check if email already exists
         if ($this->personRepository->findByEmail($dto->email) instanceof \App\Domain\Entity\Person) {
@@ -80,6 +81,15 @@ class CreateUserAdminUseCase
             throw $exception;
         }
 
-        return $createdUser;
+        return new UserResponseDTO(
+            id: $createdUser->getId(),
+            name: $createdUser->getPerson()->getName(),
+            email: $createdUser->getPerson()->getEmail(),
+            roleName: $createdUser->getRole()->getName(),
+            isActive: $createdUser->isActive(),
+            isVerified: $createdUser->isVerified(),
+            phone: $createdUser->getPerson()->getPhone(),
+            cpfcnpj: $createdUser->getPerson()->getCpfCnpj() ? $createdUser->getPerson()->getCpfCnpj()->value() : null,
+        );
     }
 }

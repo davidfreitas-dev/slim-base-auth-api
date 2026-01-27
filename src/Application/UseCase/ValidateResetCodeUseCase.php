@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Application\UseCase;
 
+use App\Application\DTO\PasswordResetResponseDTO;
 use App\Application\DTO\ValidateResetCodeRequestDTO;
-use App\Domain\Entity\PasswordReset;
 use App\Domain\Exception\NotFoundException;
 use App\Domain\Repository\PasswordResetRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
 use App\Domain\ValueObject\Code;
+use DateTimeImmutable;
 use Psr\Log\LoggerInterface;
 
 class ValidateResetCodeUseCase
@@ -21,7 +22,7 @@ class ValidateResetCodeUseCase
     ) {
     }
 
-    public function execute(ValidateResetCodeRequestDTO $request): PasswordReset
+    public function execute(ValidateResetCodeRequestDTO $request): PasswordResetResponseDTO
     {
         $user = $this->userRepository->findByEmail($request->email);
         if (!$user instanceof \App\Domain\Entity\User) {
@@ -41,6 +42,13 @@ class ValidateResetCodeUseCase
             throw new NotFoundException('Invalid email or code.');
         }
 
-        return $passwordReset;
+        return new PasswordResetResponseDTO(
+            id: $passwordReset->getId(),
+            userId: $passwordReset->getUserId(),
+            code: $passwordReset->getCode()->value,
+            expiresAt: $passwordReset->getExpiresAt()->format(DateTimeImmutable::ATOM),
+            usedAt: $passwordReset->getUsedAt()?->format(DateTimeImmutable::ATOM),
+            ipAddress: $passwordReset->getIpAddress(),
+        );
     }
 }

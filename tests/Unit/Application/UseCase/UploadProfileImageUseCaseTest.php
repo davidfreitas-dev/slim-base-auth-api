@@ -4,13 +4,16 @@ declare(strict_types=1);
 
 namespace Tests\Unit\Application\UseCase;
 
+use App\Application\DTO\UserProfileResponseDTO;
 use App\Application\UseCase\UploadProfileImageUseCase;
 use App\Domain\Entity\Person;
+use App\Domain\Entity\Role;
 use App\Domain\Entity\User;
 use App\Domain\Exception\NotFoundException;
 use App\Domain\Exception\ValidationException;
 use App\Domain\Repository\PersonRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
+use DateTimeImmutable;
 use PHPUnit\Framework\MockObject\MockObject;
 use Psr\Http\Message\UploadedFileInterface;
 use RuntimeException;
@@ -18,9 +21,9 @@ use Tests\TestCase;
 
 class UploadProfileImageUseCaseTest extends TestCase
 {
-    private \PHPUnit\Framework\MockObject\MockObject $userRepository;
-
-    private \PHPUnit\Framework\MockObject\MockObject $personRepository;
+    private UserRepositoryInterface&MockObject $userRepository;
+    
+    private PersonRepositoryInterface&MockObject $personRepository;
 
     private UploadProfileImageUseCase $uploadProfileImageUseCase;
 
@@ -64,7 +67,17 @@ class UploadProfileImageUseCaseTest extends TestCase
     public function testShouldUploadImageSuccessfully(): void
     {
         $userId = 1;
+        $mockPersonId = 1;
+        $mockUserName = 'Test User';
+        $mockUserEmail = 'test@example.com';
+        $mockUserPhone = '1234567890';
+        $mockUserCpfCnpj = '123.456.789-00';
+        $mockUserRoleId = 1;
+        $mockUserRoleName = 'user';
+        $mockCreatedAt = new DateTimeImmutable('-1 day');
+        $mockUpdatedAt = new DateTimeImmutable();
 
+        /** @var UploadedFileInterface&MockObject $uploadedFile */
         $uploadedFile = $this->createMock(UploadedFileInterface::class);
         $uploadedFile->method('getError')->willReturn(UPLOAD_ERR_OK);
         $uploadedFile->method('getSize')->willReturn(1024); // 1KB
@@ -72,24 +85,62 @@ class UploadProfileImageUseCaseTest extends TestCase
         $uploadedFile->method('getClientFilename')->willReturn('avatar.png');
         $uploadedFile->expects($this->once())->method('moveTo');
 
+        /** @var Person&MockObject $person */
         $person = $this->createMock(Person::class);
-        $person->expects($this->once())->method('setAvatarUrl');
+        $person->method('getId')->willReturn($mockPersonId);
+        $person->method('getName')->willReturn($mockUserName);
+        $person->method('getEmail')->willReturn($mockUserEmail);
+        $person->method('getPhone')->willReturn($mockUserPhone);
+        $person->method('getCpfCnpj')->willReturn(null);
 
+        // Store the avatarUrl internally within the mock to simulate state change
+        $mockAvatarUrl = null;
+        $person->method('getAvatarUrl')->willReturnCallback(function () use (&$mockAvatarUrl) {
+            return $mockAvatarUrl;
+        });
+        $person->expects($this->once())
+               ->method('setAvatarUrl')
+               ->willReturnCallback(function (?string $avatarUrl) use (&$mockAvatarUrl) {
+                   $mockAvatarUrl = $avatarUrl;
+               });
+
+        /** @var Role&MockObject $role */
+        $role = $this->createMock(Role::class);
+        $role->method('getId')->willReturn($mockUserRoleId);
+        $role->method('getName')->willReturn($mockUserRoleName);
+
+        /** @var User&MockObject $user */
         $user = $this->createMock(User::class);
         $user->method('getId')->willReturn($userId);
         $user->method('getPerson')->willReturn($person);
-        $this->userRepository->method('findById')->with($userId)->willReturn($user);
+        $user->method('getRole')->willReturn($role);
+        $user->method('isActive')->willReturn(true);
+        $user->method('isVerified')->willReturn(true);
+        $user->method('getCreatedAt')->willReturn($mockCreatedAt);
+        $user->method('getUpdatedAt')->willReturn($mockUpdatedAt);
+
+        $this->userRepository->method('findById')->with($userId)->willReturnOnConsecutiveCalls($user, $user);
 
         $this->personRepository->expects($this->once())->method('update')->with($person);
 
-        $resultPath = $this->uploadProfileImageUseCase->execute($userId, $uploadedFile);
+        $result = $this->uploadProfileImageUseCase->execute($userId, $uploadedFile);
 
-        $this->assertStringContainsString($this->uploadPath, $resultPath);
+        $this->assertInstanceOf(UserProfileResponseDTO::class, $result);
+        $this->assertStringContainsString($this->uploadPath, $result->avatarUrl);
+        $this->assertEquals($userId, $result->id);
+        $this->assertEquals($mockUserName, $result->name);
+        $this->assertEquals($mockUserEmail, $result->email);
+        $this->assertEquals($mockUserPhone, $result->phone);
+        $this->assertEquals($mockUserRoleName, $result->roleName);
+        $this->assertTrue($result->isActive);
+        $this->assertTrue($result->isVerified);
     }
 
     public function testShouldThrowNotFoundExceptionForUnknownUser(): void
     {
         $this->expectException(NotFoundException::class);
+        
+        /** @var UploadedFileInterface&MockObject $uploadedFile */
         $uploadedFile = $this->createMock(UploadedFileInterface::class);
         $this->userRepository->method('findById')->with(999)->willReturn(null);
         $this->uploadProfileImageUseCase->execute(999, $uploadedFile);
@@ -98,9 +149,12 @@ class UploadProfileImageUseCaseTest extends TestCase
     public function testShouldThrowValidationExceptionForFileUploadError(): void
     {
         $this->expectException(ValidationException::class);
+        
+        /** @var UploadedFileInterface&MockObject $uploadedFile */
         $uploadedFile = $this->createMock(UploadedFileInterface::class);
         $uploadedFile->method('getError')->willReturn(UPLOAD_ERR_NO_FILE);
 
+        /** @var User&MockObject $user */
         $user = $this->createMock(User::class);
         $this->userRepository->method('findById')->willReturn($user);
 
@@ -110,10 +164,13 @@ class UploadProfileImageUseCaseTest extends TestCase
     public function testShouldThrowValidationExceptionForFileSizeTooLarge(): void
     {
         $this->expectException(ValidationException::class);
+        
+        /** @var UploadedFileInterface&MockObject $uploadedFile */
         $uploadedFile = $this->createMock(UploadedFileInterface::class);
         $uploadedFile->method('getError')->willReturn(UPLOAD_ERR_OK);
         $uploadedFile->method('getSize')->willReturn(5 * 1024 * 1024); // 5MB
 
+        /** @var User&MockObject $user */
         $user = $this->createMock(User::class);
         $this->userRepository->method('findById')->willReturn($user);
 

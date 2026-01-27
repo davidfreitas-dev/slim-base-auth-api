@@ -115,9 +115,9 @@ class ListErrorLogsTest extends FunctionalTestCase
         $this->assertEquals(200, $response->getStatusCode());
         $body = json_decode((string)$response->getBody(), true);
 
-        $this->assertCount(2, $body['data']);
-        $this->assertEquals('Error 2', $body['data'][0]['message']);
-        $this->assertEquals('CRITICAL', $body['data'][1]['severity']);
+        $this->assertCount(2, $body['data']['errorLogs']);
+        $this->assertEquals('Error 2', $body['data']['errorLogs'][0]['message']);
+        $this->assertEquals('CRITICAL', $body['data']['errorLogs'][1]['severity']);
     }
 
     public function testListErrorLogsAsUserFails(): void

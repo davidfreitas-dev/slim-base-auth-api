@@ -6,6 +6,7 @@ namespace App\Presentation\Api\V1\Controller;
 
 use App\Application\DTO\ForgotPasswordRequestDTO;
 use App\Application\DTO\LoginRequestDTO;
+use App\Application\DTO\RegisterResponseDTO;
 use App\Application\DTO\RegisterUserRequestDTO;
 use App\Application\DTO\ResetPasswordRequestDTO;
 use App\Application\DTO\ValidateResetCodeRequestDTO;
@@ -50,21 +51,33 @@ class AuthController
 
     public function register(Request $request): Response
     {
-        $data = $request->getParsedBody();
-        $dto = RegisterUserRequestDTO::fromArray($data);
-        $this->validationService->validate($dto);
-
         try {
-            $user = $this->registerUseCase->execute($dto);
+            $data = $request->getParsedBody();
+            $dto = RegisterUserRequestDTO::fromArray($data);
+            $this->validationService->validate($dto);
 
-            $accessToken = $this->jwtService->generateAccessToken($user->getId(), $user->getEmail());
-            $refreshToken = $this->jwtService->generateRefreshToken($user->getId());
+            $userResponseDto = $this->registerUseCase->execute($dto); // Changed variable name
+
+            $accessToken = $this->jwtService->generateAccessToken($userResponseDto->id, $userResponseDto->email);
+            $refreshToken = $this->jwtService->generateRefreshToken($userResponseDto->id);
+            $expiresIn = $this->jwtService->getAccessTokenExpire();
+
+            $registerResponseDto = new RegisterResponseDTO(
+                userId: $userResponseDto->id,
+                userName: $userResponseDto->name,
+                userEmail: $userResponseDto->email,
+                userRoleName: $userResponseDto->roleName,
+                accessToken: $accessToken,
+                refreshToken: $refreshToken,
+                tokenType: 'Bearer',
+                expiresIn: $expiresIn,
+            );
 
             $responseData = [
-                JsonResponseKey::ACCESS_TOKEN->value => $accessToken,
-                JsonResponseKey::REFRESH_TOKEN->value => $refreshToken,
-                JsonResponseKey::TOKEN_TYPE->value => 'Bearer',
-                JsonResponseKey::EXPIRES_IN->value => $this->jwtService->getAccessTokenExpire(),
+                JsonResponseKey::ACCESS_TOKEN->value => $registerResponseDto->accessToken,
+                JsonResponseKey::REFRESH_TOKEN->value => $registerResponseDto->refreshToken,
+                JsonResponseKey::TOKEN_TYPE->value => $registerResponseDto->tokenType,
+                JsonResponseKey::EXPIRES_IN->value => $registerResponseDto->expiresIn,
             ];
 
             return $this->jsonResponseFactory->success(
@@ -104,9 +117,16 @@ class AuthController
         try {
             $dto = LoginRequestDTO::fromArray($request->getParsedBody());
             $this->validationService->validate($dto);
-            $result = $this->loginUseCase->execute($dto);
+            $loginResponseDto = $this->loginUseCase->execute($dto);
 
-            return $this->jsonResponseFactory->success($result, 'Login successful');
+            $responseData = [
+                JsonResponseKey::ACCESS_TOKEN->value => $loginResponseDto->accessToken,
+                JsonResponseKey::REFRESH_TOKEN->value => $loginResponseDto->refreshToken,
+                JsonResponseKey::TOKEN_TYPE->value => $loginResponseDto->tokenType,
+                JsonResponseKey::EXPIRES_IN->value => $loginResponseDto->expiresIn,
+            ];
+
+            return $this->jsonResponseFactory->success($responseData, 'Login successful');
         } catch (ValidationException $e) {
             $this->logger->warning('User login validation failed', ['exception' => $e]);
 
@@ -251,9 +271,9 @@ class AuthController
                 $resetPasswordDto->code,
             );
 
-            $passwordReset = $this->validateResetCodeUseCase->execute($validateRequest);
+            $passwordResetResponseDto = $this->validateResetCodeUseCase->execute($validateRequest);
 
-            $this->resetPasswordUseCase->execute($passwordReset, $resetPasswordDto);
+            $this->resetPasswordUseCase->execute($passwordResetResponseDto, $resetPasswordDto);
 
             return $this->jsonResponseFactory->success(null, 'Password reset successfully');
         } catch (NotFoundException $e) {
