@@ -4,23 +4,23 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Api\V1\Auth;
 
-use DateTimeImmutable;
+use Faker\Factory;
 use App\Domain\Entity\Role;
 use App\Domain\Entity\User;
 use App\Domain\Entity\Person;
 use App\Domain\ValueObject\CpfCnpj;
-use Tests\Functional\FunctionalTestCase;
-use Fig\Http\Message\StatusCodeInterface;
+use App\Domain\Exception\NotFoundException;
+use App\Domain\Repository\RoleRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
 use App\Domain\Repository\PersonRepositoryInterface;
-use Faker\Factory;
+use Tests\Functional\FunctionalTestCase;
+use Fig\Http\Message\StatusCodeInterface;
 
 class RefreshTest extends FunctionalTestCase
 {
     private UserRepositoryInterface $userRepository;
-
     private PersonRepositoryInterface $personRepository;
-
+    private RoleRepositoryInterface $roleRepository;
     private \Faker\Generator $faker;
 
     protected function setUp(): void
@@ -28,6 +28,7 @@ class RefreshTest extends FunctionalTestCase
         parent::setUp();
         $this->userRepository = $this->app->getContainer()->get(UserRepositoryInterface::class);
         $this->personRepository = $this->app->getContainer()->get(PersonRepositoryInterface::class);
+        $this->roleRepository = $this->app->getContainer()->get(RoleRepositoryInterface::class);
         $this->faker = Factory::create('pt_BR');
     }
 
@@ -46,13 +47,10 @@ class RefreshTest extends FunctionalTestCase
         $person = $this->personRepository->create($person);
 
         // Criar Role
-        $role = new Role(
-            1,
-            'user',
-            'User role',
-            new DateTimeImmutable(),
-            new DateTimeImmutable()
-        );
+        $role = $this->roleRepository->findByName('user');
+        if (!$role instanceof Role) {
+            throw new NotFoundException("Role 'user' not found in the database. Please ensure roles are seeded for testing.");
+        }
 
         // Criar User
         $user = new User(

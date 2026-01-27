@@ -4,27 +4,27 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Api\V1\Auth;
 
-use App\Domain\Entity\Person;
+use Faker\Factory;
+use DateTimeImmutable;
 use App\Domain\Entity\Role;
 use App\Domain\Entity\User;
-use App\Domain\Entity\UserVerification;
-use App\Domain\Repository\PersonRepositoryInterface;
-use App\Domain\Repository\UserRepositoryInterface;
-use App\Domain\Repository\UserVerificationRepositoryInterface;
+use App\Domain\Entity\Person;
 use App\Domain\ValueObject\CpfCnpj;
-use DateTimeImmutable;
-use Fig\Http\Message\StatusCodeInterface;
+use App\Domain\Entity\UserVerification;
+use App\Domain\Exception\NotFoundException;
+use App\Domain\Repository\RoleRepositoryInterface;
+use App\Domain\Repository\UserRepositoryInterface;
+use App\Domain\Repository\PersonRepositoryInterface;
+use App\Domain\Repository\UserVerificationRepositoryInterface;
 use Tests\Functional\FunctionalTestCase;
-use Faker\Factory;
+use Fig\Http\Message\StatusCodeInterface;
 
 class VerifyEmailTest extends FunctionalTestCase
 {
     private PersonRepositoryInterface $personRepository;
-
     private UserRepositoryInterface $userRepository;
-
     private UserVerificationRepositoryInterface $userVerificationRepository;
-
+    private RoleRepositoryInterface $roleRepository;
     private \Faker\Generator $faker;
 
     protected function setUp(): void
@@ -33,6 +33,7 @@ class VerifyEmailTest extends FunctionalTestCase
         $this->personRepository = $this->app->getContainer()->get(PersonRepositoryInterface::class);
         $this->userRepository = $this->app->getContainer()->get(UserRepositoryInterface::class);
         $this->userVerificationRepository = $this->app->getContainer()->get(UserVerificationRepositoryInterface::class);
+        $this->roleRepository = $this->app->getContainer()->get(RoleRepositoryInterface::class);
         $this->faker = Factory::create('pt_BR');
     }
 
@@ -46,13 +47,10 @@ class VerifyEmailTest extends FunctionalTestCase
         );
         $person = $this->personRepository->create($person);
 
-        $role = new Role(
-            1,
-            'user',
-            'User role',
-            new DateTimeImmutable(),
-            new DateTimeImmutable()
-        );
+        $role = $this->roleRepository->findByName('user');
+        if (!$role instanceof Role) {
+            throw new NotFoundException("Role 'user' not found in the database. Please ensure roles are seeded for testing.");
+        }
 
         $user = new User(
             person: $person,
@@ -106,13 +104,10 @@ class VerifyEmailTest extends FunctionalTestCase
         );
         $person = $this->personRepository->create($person);
 
-        $role = new Role(
-            1,
-            'user',
-            'User role',
-            new DateTimeImmutable(),
-            new DateTimeImmutable()
-        );
+        $role = $this->roleRepository->findByName('user');
+        if (!$role instanceof Role) {
+            throw new NotFoundException("Role 'user' not found in the database. Please ensure roles are seeded for testing.");
+        }
 
         $user = new User(
             person: $person,
@@ -148,15 +143,11 @@ class VerifyEmailTest extends FunctionalTestCase
         );
         $person = $this->personRepository->create($person);
 
-        $role = new Role(
-            1,
-            'user',
-            'User role',
-            new DateTimeImmutable(),
-            new DateTimeImmutable()
-        );
+        $role = $this->roleRepository->findByName('user');
+        if (!$role instanceof Role) {
+            throw new NotFoundException("Role 'user' not found in the database. Please ensure roles are seeded for testing.");
+        }
 
-        // User is already verified
         $user = new User(
             person: $person,
             password: 'hashedpassword',
@@ -209,13 +200,10 @@ class VerifyEmailTest extends FunctionalTestCase
         );
         $person = $this->personRepository->create($person);
 
-        $role = new Role(
-            1,
-            'user',
-            'User role',
-            new DateTimeImmutable(),
-            new DateTimeImmutable()
-        );
+        $role = $this->roleRepository->findByName('user');
+        if (!$role instanceof Role) {
+            throw new NotFoundException("Role 'user' not found in the database. Please ensure roles are seeded for testing.");
+        }
 
         $user = new User(
             person: $person,

@@ -4,15 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Api\V1\Admin;
 
-use App\Domain\Entity\Person;
-use App\Domain\Entity\User;
-use App\Domain\Repository\PersonRepositoryInterface;
-use App\Domain\Repository\UserRepositoryInterface;
-use App\Domain\Repository\RoleRepositoryInterface;
-use App\Domain\ValueObject\CpfCnpj; 
-use Fig\Http\Message\StatusCodeInterface;
-use Tests\Functional\FunctionalTestCase;
 use Faker\Factory;
+use App\Domain\Entity\Role;
+use App\Domain\Entity\User;
+use App\Domain\Entity\Person;
+use App\Domain\ValueObject\CpfCnpj; 
+use App\Domain\Exception\NotFoundException;
+use App\Domain\Repository\RoleRepositoryInterface;
+use App\Domain\Repository\UserRepositoryInterface;
+use App\Domain\Repository\PersonRepositoryInterface;
+use Tests\Functional\FunctionalTestCase;
+use Fig\Http\Message\StatusCodeInterface;
 
 class DeleteUserTest extends FunctionalTestCase
 {
@@ -46,6 +48,9 @@ class DeleteUserTest extends FunctionalTestCase
         $person = $this->personRepository->create($person);
 
         $role = $this->roleRepository->findByName('admin');
+        if (!$role instanceof Role) {
+            throw new NotFoundException("Role 'admin' not found in the database. Please ensure roles are seeded for testing.");
+        }
 
         $user = new User(
             person: $person,
@@ -87,6 +92,9 @@ class DeleteUserTest extends FunctionalTestCase
         $person = $this->personRepository->create($person);
 
         $role = $this->roleRepository->findByName('user');
+        if (!$role instanceof Role) {
+            throw new NotFoundException("Role 'user' not found in the database. Please ensure roles are seeded for testing.");
+        }
 
         $user = new User(
             person: $person,

@@ -73,7 +73,7 @@ class CachingUserRepositoryTest extends DatabaseTestCase
         // Retrieve the role by ID, which is seeded by DatabaseTestCase
         $role = $this->roleRepository->findById($roleId);
 
-        if (!$role) {
+        if (!$role instanceof Role) {
             throw new \RuntimeException("Role with ID {$roleId} not found in test database. Check DatabaseTestCase seeding.");
         }
 

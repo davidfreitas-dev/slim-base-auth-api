@@ -4,23 +4,25 @@ declare(strict_types=1);
 
 namespace Tests\Functional\Api\V1\Auth;
 
-use DateTimeImmutable;
+use Faker\Factory;
 use App\Domain\Entity\Role;
 use App\Domain\Entity\User;
 use App\Domain\Entity\Person;
 use App\Domain\ValueObject\CpfCnpj;
-use Tests\Functional\FunctionalTestCase;
-use Fig\Http\Message\StatusCodeInterface;
+use App\Domain\Exception\NotFoundException;
+use App\Domain\Repository\RoleRepositoryInterface;
 use App\Domain\Repository\UserRepositoryInterface;
 use App\Domain\Repository\PersonRepositoryInterface;
 use App\Domain\Repository\PasswordResetRepositoryInterface;
-use Faker\Factory;
+use Tests\Functional\FunctionalTestCase;
+use Fig\Http\Message\StatusCodeInterface;
 
 class ValidateResetTokenTest extends FunctionalTestCase
 {
     private UserRepositoryInterface $userRepository;
     private PersonRepositoryInterface $personRepository;
     private PasswordResetRepositoryInterface $passwordResetRepository;
+    private RoleRepositoryInterface $roleRepository;
     private \Faker\Generator $faker;
 
     protected function setUp(): void
@@ -29,6 +31,7 @@ class ValidateResetTokenTest extends FunctionalTestCase
         $this->userRepository = $this->app->getContainer()->get(UserRepositoryInterface::class);
         $this->personRepository = $this->app->getContainer()->get(PersonRepositoryInterface::class);
         $this->passwordResetRepository = $this->app->getContainer()->get(PasswordResetRepositoryInterface::class);
+        $this->roleRepository = $this->app->getContainer()->get(RoleRepositoryInterface::class);
         $this->faker = Factory::create('pt_BR');
     }
 
@@ -45,13 +48,10 @@ class ValidateResetTokenTest extends FunctionalTestCase
         );
         $person = $this->personRepository->create($person);
 
-        $role = new Role(
-            id: 1,
-            name: 'user',
-            description: 'User role',
-            createdAt: new DateTimeImmutable(),
-            updatedAt: new DateTimeImmutable()
-        );
+        $role = $this->roleRepository->findByName('user');
+        if (!$role instanceof Role) {
+            throw new NotFoundException("Role 'user' not found in the database. Please ensure roles are seeded for testing.");
+        }
 
         $user = new User(
             person: $person,

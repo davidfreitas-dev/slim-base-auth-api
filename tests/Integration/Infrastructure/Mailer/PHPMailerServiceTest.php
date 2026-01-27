@@ -4,16 +4,17 @@ declare(strict_types=1);
 
 namespace Tests\Integration\Infrastructure\Mailer;
 
-use App\Domain\Entity\User;
-use App\Infrastructure\Mailer\EmailVerificationEmailTemplate;
-use App\Infrastructure\Mailer\PHPMailerService;
-use App\Infrastructure\Persistence\MySQL\PersonRepository;
-use App\Infrastructure\Persistence\MySQL\RoleRepository;
-use Monolog\Handler\NullHandler;
-use Monolog\Logger;
-use Tests\Integration\DatabaseTestCase;
 use Faker\Factory;
+use Monolog\Logger;
+use Monolog\Handler\NullHandler;
+use App\Domain\Entity\Role;
+use App\Domain\Entity\User;
 use App\Domain\Entity\Person;
+use App\Infrastructure\Mailer\PHPMailerService;
+use App\Infrastructure\Persistence\MySQL\RoleRepository;
+use App\Infrastructure\Persistence\MySQL\PersonRepository;
+use App\Infrastructure\Mailer\EmailVerificationEmailTemplate;
+use Tests\Integration\DatabaseTestCase;
 
 class PHPMailerServiceTest extends DatabaseTestCase
 {
@@ -25,7 +26,7 @@ class PHPMailerServiceTest extends DatabaseTestCase
     protected function setUp(): void
     {
         parent::setUp();
-        $this->faker = Factory::create();
+        $this->faker = Factory::create('pt_BR');
         
         $logger = new Logger('test-mailer');
         $logger->pushHandler(new NullHandler());
@@ -82,7 +83,7 @@ class PHPMailerServiceTest extends DatabaseTestCase
         
         $role = $this->roleRepository->findByName('customer');
 
-        if (!$role) {
+        if (!$role instanceof Role) {
             throw new \RuntimeException("Customer role not found in test database. Check DatabaseTestCase seeding.");
         }
         
