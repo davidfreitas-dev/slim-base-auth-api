@@ -25,7 +25,7 @@ return function (App $app): void {
             $auth->post('/login', [AuthController::class, 'login']);
             $auth->post('/refresh', [AuthController::class, 'refresh']);
             $auth->post('/forgot-password', [AuthController::class, 'forgotPassword']);
-            $auth->post('/validate-reset-token', [AuthController::class, 'validateResetToken']);
+            $auth->post('/validate-reset-code', [AuthController::class, 'validateResetCode']);
             $auth->post('/reset-password', [AuthController::class, 'resetPassword']);
             $auth->get('/verify-email', [AuthController::class, 'verifyEmail']);
             $auth->post('/logout', [AuthController::class, 'logout'])->add(JwtAuthMiddleware::class);

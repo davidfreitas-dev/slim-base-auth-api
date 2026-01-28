@@ -17,7 +17,7 @@ use App\Domain\Repository\PasswordResetRepositoryInterface;
 use Tests\Functional\FunctionalTestCase;
 use Fig\Http\Message\StatusCodeInterface;
 
-class ValidateResetTokenTest extends FunctionalTestCase
+class validateResetCodeTest extends FunctionalTestCase
 {
     private UserRepositoryInterface $userRepository;
     private PersonRepositoryInterface $personRepository;
@@ -35,7 +35,7 @@ class ValidateResetTokenTest extends FunctionalTestCase
         $this->faker = Factory::create('pt_BR');
     }
 
-    public function testValidateResetTokenWithValidTokenReturnsOk(): void
+    public function testvalidateResetCodeWithValidCodeReturnsOk(): void
     {
         // Arrange
         $password = 'password123';
@@ -66,15 +66,15 @@ class ValidateResetTokenTest extends FunctionalTestCase
         // This will trigger the creation of a reset token
         $this->sendRequest('POST', '/api/v1/auth/forgot-password', ['email' => 'test@example.com']);
         
-        $token = $this->getLatestPasswordResetTokenForUser($user->getId());
+        $code = $this->getLatestPasswordResetCodeForUser($user->getId());
 
         $payload = [
             'email' => 'test@example.com',
-            'token' => $token,
+            'code' => $code,
         ];
 
         // Act
-        $response = $this->sendRequest('POST', '/api/v1/auth/validate-reset-token', $payload);
+        $response = $this->sendRequest('POST', '/api/v1/auth/validate-reset-code', $payload);
         $response->getBody()->rewind();
         $body = $response->getBody()->getContents();
         
@@ -85,16 +85,16 @@ class ValidateResetTokenTest extends FunctionalTestCase
         $this->assertEquals('Code is valid', $responseData['message']);
     }
 
-    public function testValidateResetTokenWithInvalidTokenReturnsBadRequest(): void
+    public function testvalidateResetCodeWithInvalidTokenReturnsBadRequest(): void
     {
         // Arrange
         $payload = [
             'email' => 'test@example.com',
-            'token' => 'invalid-token',
+            'code' => 'invalid-code',
         ];
 
         // Act
-        $response = $this->sendRequest('POST', '/api/v1/auth/validate-reset-token', $payload);
+        $response = $this->sendRequest('POST', '/api/v1/auth/validate-reset-code', $payload);
 
         // Assert
         $this->assertEquals(StatusCodeInterface::STATUS_BAD_REQUEST, $response->getStatusCode());
@@ -103,7 +103,7 @@ class ValidateResetTokenTest extends FunctionalTestCase
     /**
      * Get the latest password reset token for a user directly from database.
      */
-    private function getLatestPasswordResetTokenForUser(int $userId): string
+    private function getLatestPasswordResetCodeForUser(int $userId): string
     {
         $container = $this->app->getContainer();
         $pdo = $container->get(\PDO::class);

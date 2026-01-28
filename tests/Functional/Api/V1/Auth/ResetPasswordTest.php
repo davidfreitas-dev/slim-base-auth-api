@@ -66,12 +66,12 @@ class ResetPasswordTest extends FunctionalTestCase
 
         $this->sendRequest('POST', '/api/v1/auth/forgot-password', ['email' => $email]);
         
-        $token = $this->getLatestPasswordResetTokenForUser($user->getId());
+        $code = $this->getLatestPasswordResetCodeForUser($user->getId());
 
         $newPassword = 'newPassword123';
         $payload = [
             'email' => $email,
-            'code' => $token,
+            'code' => $code,
             'password' => $newPassword,
             'password_confirm' => $newPassword,
         ];
@@ -98,7 +98,7 @@ class ResetPasswordTest extends FunctionalTestCase
         $newPassword = 'newPassword123';
         $payload = [
             'email' => 'test@example.com',
-            'token' => 'invalid-token',
+            'code' => 'invalid-code',
             'password' => $newPassword,
             'password_confirm' => $newPassword,
         ];
@@ -141,11 +141,11 @@ class ResetPasswordTest extends FunctionalTestCase
 
         $this->sendRequest('POST', '/api/v1/auth/forgot-password', ['email' => $email]);
 
-        $token = $this->getLatestPasswordResetTokenForUser($user->getId());
+        $code = $this->getLatestPasswordResetCodeForUser($user->getId());
 
         $payload = [
             'email' => $email,
-            'token' => $token,
+            'code' => $code,
             'password' => 'newPassword123',
             'password_confirm' => 'differentPassword',
         ];
@@ -160,7 +160,7 @@ class ResetPasswordTest extends FunctionalTestCase
     /**
      * Get the latest password reset token for a user directly from database.
      */
-    private function getLatestPasswordResetTokenForUser(int $userId): string
+    private function getLatestPasswordResetCodeForUser(int $userId): string
     {
         $container = $this->app->getContainer();
         $pdo = $container->get(\PDO::class);

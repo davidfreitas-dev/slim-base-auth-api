@@ -148,47 +148,67 @@ class AuthController
 
     public function refresh(Request $request): Response
     {
-        $data = $request->getParsedBody();
-        $refreshToken = $data[JsonResponseKey::REFRESH_TOKEN->value] ?? '';
-        $decoded = $this->jwtService->validateToken($refreshToken);
+        try {
+            $data = $request->getParsedBody();
+            $refreshToken = $data[JsonResponseKey::REFRESH_TOKEN->value] ?? '';
+            $decoded = $this->jwtService->validateToken($refreshToken);
 
-        if (!$decoded || JwtTokenType::REFRESH->value !== $decoded->type) {
-            return $this->jsonResponseFactory->fail(null, 'Invalid refresh token', 401);
+            if (JwtTokenType::REFRESH->value !== $decoded->type) {
+                return $this->jsonResponseFactory->fail(null, 'Invalid refresh token', 401);
+            }
+
+            if (!$this->jwtService->isRefreshTokenValid($decoded->jti)) {
+                return $this->jsonResponseFactory->fail(null, 'Refresh token has been revoked', 401);
+            }
+
+            $user = $this->userRepository->findById((int)$decoded->sub);
+            if (!$user instanceof \App\Domain\Entity\User) {
+                return $this->jsonResponseFactory->fail(null, 'Usuário não encontrado..', 404);
+            }
+
+            // Invalidate the old refresh token
+            $this->jwtService->revokeRefreshToken($decoded->jti);
+
+            // Generate new access and refresh tokens
+            $newAccessToken = $this->jwtService->generateAccessToken($user->getId(), $user->getPerson()->getEmail());
+            $newRefreshToken = $this->jwtService->generateRefreshToken($user->getId());
+
+            $tokenData = [
+                JsonResponseKey::ACCESS_TOKEN->value => $newAccessToken,
+                JsonResponseKey::REFRESH_TOKEN->value => $newRefreshToken,
+                JsonResponseKey::TOKEN_TYPE->value => 'Bearer',
+                JsonResponseKey::EXPIRES_IN->value => $this->jwtService->getAccessTokenExpire(),
+            ];
+
+            return $this->jsonResponseFactory->success($tokenData, 'Token refreshed successfully');
+        } catch (\App\Domain\Exception\AuthenticationException $e) {
+            return $this->jsonResponseFactory->fail(null, $e->getMessage(), 401);
+        } catch (Throwable $e) {
+            $this->logger->error('An unexpected error occurred during token refresh', ['exception' => $e]);
+            return $this->jsonResponseFactory->error(
+                'An unexpected error occurred. Please try again later.',
+                null,
+                500,
+            );
         }
-
-        if (!$this->jwtService->isRefreshTokenValid($decoded->jti)) {
-            return $this->jsonResponseFactory->fail(null, 'Refresh token has been revoked', 401);
-        }
-
-        $user = $this->userRepository->findById((int)$decoded->sub);
-        if (!$user instanceof \App\Domain\Entity\User) {
-            return $this->jsonResponseFactory->fail(null, 'Usuário não encontrado..', 404);
-        }
-
-        // Invalidate the old refresh token
-        $this->jwtService->revokeRefreshToken($decoded->jti);
-
-        // Generate new access and refresh tokens
-        $newAccessToken = $this->jwtService->generateAccessToken($user->getId(), $user->getPerson()->getEmail());
-        $newRefreshToken = $this->jwtService->generateRefreshToken($user->getId());
-
-        $tokenData = [
-            JsonResponseKey::ACCESS_TOKEN->value => $newAccessToken,
-            JsonResponseKey::REFRESH_TOKEN->value => $newRefreshToken,
-            JsonResponseKey::TOKEN_TYPE->value => 'Bearer',
-            JsonResponseKey::EXPIRES_IN->value => $this->jwtService->getAccessTokenExpire(),
-        ];
-
-        return $this->jsonResponseFactory->success($tokenData, 'Token refreshed successfully');
     }
 
     public function logout(Request $request): Response
     {
-        $jti = $request->getAttribute('token_jti');
-        $exp = $request->getAttribute('token_exp');
-        $this->jwtService->blockToken($jti, $exp);
+        try {
+            $jti = $request->getAttribute('token_jti');
+            $exp = $request->getAttribute('token_exp');
+            $this->jwtService->blockToken($jti, $exp);
 
-        return $this->jsonResponseFactory->success(null, 'Logout successful');
+            return $this->jsonResponseFactory->success(null, 'Logout successful');
+        } catch (Throwable $e) {
+            $this->logger->error('An unexpected error occurred during logout', ['exception' => $e]);
+            return $this->jsonResponseFactory->error(
+                'An unexpected error occurred. Please try again later.',
+                null,
+                500,
+            );
+        }
     }
 
     public function forgotPassword(Request $request): Response
@@ -229,17 +249,16 @@ class AuthController
         }
     }
 
-    public function validateResetToken(Request $request): Response
+    public function validateResetCode(Request $request): Response
     {
         $data = $request->getParsedBody();
         $email = $data['email'] ?? '';
-        $token = $data['token'] ?? '';
+        $code = $data['code'] ?? '';
 
         try {
-            $validateRequest = new ValidateResetCodeRequestDTO($email, $token);
+            $validateRequest = new ValidateResetCodeRequestDTO($email, $code);
             $this->validationService->validate($validateRequest);
             $this->validateResetCodeUseCase->execute($validateRequest);
-
             return $this->jsonResponseFactory->success(null, 'Code is valid');
         } catch (NotFoundException $e) {
             $this->logger->warning('Invalid reset code validation attempt', ['exception' => $e]);

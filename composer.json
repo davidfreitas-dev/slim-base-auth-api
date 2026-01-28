@@ -42,7 +42,7 @@
         "test:unit": "phpunit --configuration tools/phpunit.xml --testsuite Unit",
         "test:integration": "phpunit --configuration tools/phpunit.xml --testsuite Integration",
         "test:functional": "phpunit --configuration tools/phpunit.xml --testsuite Functional",
-        "test:coverage": "phpunit --configuration tools/phpunit.phpunit.xml --coverage-html tools/coverage",
+        "test:coverage": "phpunit --configuration tools/phpunit.xml --coverage-html tools/coverage",
         "test:testdox": "phpunit --configuration tools/phpunit.xml --testdox",
         "cs-check": "php-cs-fixer fix --config=tools/.php-cs-fixer.dist.php --dry-run --diff",
         "cs-fix": "php-cs-fixer fix --config=tools/.php-cs-fixer.dist.php --verbose --allow-risky=yes",
