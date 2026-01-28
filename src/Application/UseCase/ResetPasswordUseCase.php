@@ -28,7 +28,7 @@ class ResetPasswordUseCase
         $user = $this->userRepository->findById($passwordResetDto->userId);
 
         if (!$user instanceof \App\Domain\Entity\User) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException('Usuário não encontrado.');
         }
 
         // Update password

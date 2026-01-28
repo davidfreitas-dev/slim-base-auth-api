@@ -33,27 +33,27 @@ class UpdateUserAdminUseCase
         try {
             $user = $this->userRepository->findById($dto->userId);
             if (!$user instanceof \App\Domain\Entity\User) {
-                throw new NotFoundException('User not found.');
+                throw new NotFoundException('Usuário não encontrado..');
             }
 
             // Check for email conflicts
             $existingPersonWithEmail = $this->personRepository->findByEmail($dto->email);
             if ($existingPersonWithEmail && $existingPersonWithEmail->getId() !== $user->getPerson()->getId()) {
-                throw new ConflictException('Email is already in use by another user.');
+                throw new ConflictException('O e-mail já está em uso por outro usuário.');
             }
 
             // Check for CPF/CNPJ conflicts
             if ($dto->cpfcnpj) {
                 $existingPersonWithCpfCnpj = $this->personRepository->findByCpfCnpj($dto->cpfcnpj);
                 if ($existingPersonWithCpfCnpj && $existingPersonWithCpfCnpj->getId() !== $user->getPerson()->getId()) {
-                    throw new ConflictException('CPF/CNPJ is already in use by another user.');
+                    throw new ConflictException('O CPF/CNPJ já está em uso por outro usuário.');
                 }
             }
 
             // Find and set the new role
             $role = $this->roleRepository->findByName($dto->roleName);
             if (!$role instanceof Role) {
-                throw new NotFoundException(sprintf("Role '%s' not found.", $dto->roleName));
+                throw new NotFoundException(sprintf("O perfil '%s' não foi encontrado.", $dto->roleName));
             }
 
             $user->setRole($role);

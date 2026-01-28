@@ -28,7 +28,7 @@ class ValidateResetCodeUseCase
         if (!$user instanceof \App\Domain\Entity\User) {
             $this->logger->warning('Password reset code validation failed for unknown email', ['email' => $request->email]);
 
-            throw new NotFoundException('Invalid email or code.');
+            throw new NotFoundException('E-mail ou código inválido.');
         }
 
         $passwordReset = $this->passwordResetRepository->findByCode(Code::from($request->code));
@@ -39,7 +39,7 @@ class ValidateResetCodeUseCase
                 'code' => $request->code,
             ]);
 
-            throw new NotFoundException('Invalid email or code.');
+            throw new NotFoundException('E-mail ou código inválido.');
         }
 
         return new PasswordResetResponseDTO(

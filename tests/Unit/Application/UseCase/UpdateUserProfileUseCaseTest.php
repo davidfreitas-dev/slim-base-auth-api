@@ -110,7 +110,7 @@ class UpdateUserProfileUseCaseTest extends TestCase
     public function testShouldThrowValidationExceptionOnEmailConflict(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Email already registered by another user.');
+        $this->expectExceptionMessage('O e-mail já está cadastrado por outro usuário.');
 
         $dto = new UpdateUserProfileRequestDTO(1, 'User One', 'conflict@email.com', null, null, null);
 

@@ -75,7 +75,7 @@ class VerifyEmailUseCaseTest extends TestCase
     public function testShouldThrowNotFoundExceptionForInvalidToken(): void
     {
         $this->expectException(NotFoundException::class);
-        $this->expectExceptionMessage('Invalid verification token.');
+        $this->expectExceptionMessage('Token de verificação inválido.');
 
         $this->userVerificationRepository->method('findByToken')->with('invalid-token')->willReturn(null);
         $this->verifyEmailUseCase->execute('invalid-token');
@@ -84,7 +84,7 @@ class VerifyEmailUseCaseTest extends TestCase
     public function testShouldThrowValidationExceptionForUsedToken(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Verification token has already been used.');
+        $this->expectExceptionMessage('O token de verificação já foi utilizado.');
 
         $verification = $this->createMock(UserVerification::class);
         $verification->method('isUsed')->willReturn(true);
@@ -96,7 +96,7 @@ class VerifyEmailUseCaseTest extends TestCase
     public function testShouldThrowValidationExceptionForExpiredToken(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Verification token has expired.');
+        $this->expectExceptionMessage('O token de verificação expirou.');
 
         $verification = $this->createMock(UserVerification::class);
         $verification->method('isUsed')->willReturn(false);
@@ -144,7 +144,7 @@ class VerifyEmailUseCaseTest extends TestCase
     public function testShouldThrowNotFoundExceptionForNonExistentUser(): void
     {
         $this->expectException(NotFoundException::class);
-        $this->expectExceptionMessage('User not found.');
+        $this->expectExceptionMessage('Usuário não encontrado..');
 
         $token = 'valid-token';
         $userId = 999;

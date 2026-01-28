@@ -26,7 +26,7 @@ class DeleteUserUseCase
         $user = $this->userRepository->findById($userId);
 
         if (!$user instanceof \App\Domain\Entity\User) {
-            throw new NotFoundException('User not found.');
+            throw new NotFoundException('Usuário não encontrado..');
         }
 
         $this->pdo->beginTransaction();

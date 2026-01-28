@@ -34,18 +34,18 @@ class CreateUserAdminUseCase
     {
         // Check if email already exists
         if ($this->personRepository->findByEmail($dto->email) instanceof \App\Domain\Entity\Person) {
-            throw new ConflictException('Email already registered');
+            throw new ConflictException('O e-mail já está cadastrado');
         }
 
         // Check if CPF/CNPJ already exists
         if ($dto->cpfcnpj && $this->personRepository->findByCpfCnpj($dto->cpfcnpj)) {
-            throw new ConflictException('CPF/CNPJ already registered');
+            throw new ConflictException('O CPF/CNPJ já está cadastrado');
         }
 
         // Find the role, or throw an exception if it doesn't exist
         $role = $this->roleRepository->findByName($dto->roleName);
         if (!$role instanceof Role) {
-            throw new NotFoundException(sprintf("Role '%s' not found.", $dto->roleName));
+            throw new NotFoundException(sprintf("O perfil '%s' não foi encontrado.", $dto->roleName));
         }
 
         $this->pdo->beginTransaction();

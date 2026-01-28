@@ -162,7 +162,7 @@ class AuthController
 
         $user = $this->userRepository->findById((int)$decoded->sub);
         if (!$user instanceof \App\Domain\Entity\User) {
-            return $this->jsonResponseFactory->fail(null, 'User not found', 404);
+            return $this->jsonResponseFactory->fail(null, 'Usuário não encontrado..', 404);
         }
 
         // Invalidate the old refresh token

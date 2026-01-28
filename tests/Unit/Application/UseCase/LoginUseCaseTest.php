@@ -95,7 +95,7 @@ class LoginUseCaseTest extends TestCase
             ->willReturn(null);
 
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('Invalid credentials');
+        $this->expectExceptionMessage('Credenciais inválidas.');
 
         $this->loginUseCase->execute($dto);
     }
@@ -124,7 +124,7 @@ class LoginUseCaseTest extends TestCase
             ->willReturn(false);
 
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('Invalid credentials');
+        $this->expectExceptionMessage('Credenciais inválidas.');
 
         $this->loginUseCase->execute($dto);
     }
@@ -153,7 +153,7 @@ class LoginUseCaseTest extends TestCase
             ->willReturn(true);
 
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('User account is not active');
+        $this->expectExceptionMessage('A conta do usuário não está ativa.');
 
         $this->loginUseCase->execute($dto);
     }

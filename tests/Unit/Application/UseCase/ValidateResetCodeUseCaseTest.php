@@ -82,7 +82,7 @@ class ValidateResetCodeUseCaseTest extends TestCase
     public function testShouldThrowNotFoundExceptionForUnknownEmail(): void
     {
         $this->expectException(NotFoundException::class);
-        $this->expectExceptionMessage('Invalid email or code.');
+        $this->expectExceptionMessage('E-mail ou código inválido.');
 
         $dto = new ValidateResetCodeRequestDTO('unknown@example.com', '654321');
         $this->userRepository->method('findByEmail')->with('unknown@example.com')->willReturn(null);
@@ -93,7 +93,7 @@ class ValidateResetCodeUseCaseTest extends TestCase
     public function testShouldThrowNotFoundExceptionForInvalidCode(): void
     {
         $this->expectException(NotFoundException::class);
-        $this->expectExceptionMessage('Invalid email or code.');
+        $this->expectExceptionMessage('E-mail ou código inválido.');
 
         $dto = new ValidateResetCodeRequestDTO('test@example.com', '111111');
 
@@ -108,7 +108,7 @@ class ValidateResetCodeUseCaseTest extends TestCase
     public function testShouldThrowNotFoundExceptionIfCodeUserMismatch(): void
     {
         $this->expectException(NotFoundException::class);
-        $this->expectExceptionMessage('Invalid email or code.');
+        $this->expectExceptionMessage('E-mail ou código inválido.');
 
         $dto = new ValidateResetCodeRequestDTO('test@example.com', '123456');
 

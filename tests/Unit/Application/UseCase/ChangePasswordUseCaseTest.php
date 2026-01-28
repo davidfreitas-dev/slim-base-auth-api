@@ -67,7 +67,7 @@ class ChangePasswordUseCaseTest extends TestCase
     public function testShouldThrowValidationExceptionForWrongOldPassword(): void
     {
         $this->expectException(ValidationException::class);
-        $this->expectExceptionMessage('Current password does not match.');
+        $this->expectExceptionMessage('A senha atual não confere.');
 
         $dto = new ChangePasswordRequestDTO(1, 'wrong-old-password', 'new-password', 'new-password');
 
@@ -83,7 +83,7 @@ class ChangePasswordUseCaseTest extends TestCase
     public function testShouldThrowNotFoundExceptionIfUserNotFound(): void
     {
         $this->expectException(NotFoundException::class);
-        $this->expectExceptionMessage('User not found');
+        $this->expectExceptionMessage('Usuário não encontrado..');
 
         $dto = new ChangePasswordRequestDTO(999, 'old-password', 'new-password', 'new-password');
 

@@ -28,11 +28,11 @@ class ChangePasswordUseCase
         $user = $this->userRepository->findById($dto->userId);
 
         if (!$user instanceof \App\Domain\Entity\User) {
-            throw new NotFoundException('User not found.');
+            throw new NotFoundException('Usuário não encontrado..');
         }
 
         if (!$this->passwordHasher->verify($dto->currentPassword, $user->getPassword())) {
-            throw new ValidationException('Current password does not match.');
+            throw new ValidationException('A senha atual não confere.');
         }
 
         $newPasswordHash = $this->passwordHasher->hash($dto->newPassword);

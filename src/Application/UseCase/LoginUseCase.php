@@ -25,15 +25,15 @@ class LoginUseCase
         $user = $this->userRepository->findByEmail($dto->email);
 
         if (!$user) {
-            throw new AuthenticationException('Invalid credentials');
+            throw new AuthenticationException('Credenciais inválidas.');
         }
 
         if (!$this->passwordHasher->verify($dto->password, $user->getPassword())) {
-            throw new AuthenticationException('Invalid credentials');
+            throw new AuthenticationException('Credenciais inválidas.');
         }
 
         if (!$user->isActive()) {
-            throw new AuthenticationException('User account is not active');
+            throw new AuthenticationException('A conta do usuário não está ativa.');
         }
 
         $accessToken = $this->jwtService->generateAccessToken($user->getId(), $user->getPerson()->getEmail());

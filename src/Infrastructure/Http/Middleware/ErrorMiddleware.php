@@ -79,7 +79,7 @@ class ErrorMiddleware implements MiddlewareInterface
 
         if ($statusCode >= 500) {
             if (!$this->displayErrors) {
-                $message = 'Internal Server Error';
+                $message = 'Ocorreu um erro interno no servidor.';
             } else {
                 $data['debug'] = [
                     'file' => $e->getFile(),

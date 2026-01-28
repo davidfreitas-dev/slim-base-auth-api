@@ -30,7 +30,7 @@ class UploadProfileImageUseCase
     {
         $user = $this->userRepository->findById($userId);
         if (!$user instanceof \App\Domain\Entity\User) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException('Usuário não encontrado.');
         }
 
         $this->validateUploadedFile($uploadedFile);
@@ -48,7 +48,7 @@ class UploadProfileImageUseCase
             $uploadedFile->moveTo($destinationPath);
         } catch (Exception) {
             // Log the exception if needed
-            throw new RuntimeException('Failed to move uploaded file.');
+            throw new RuntimeException('Falha ao mover o arquivo enviado.');
         }
 
         // Delete the old file if it exists
@@ -64,7 +64,7 @@ class UploadProfileImageUseCase
         $updatedUser = $this->userRepository->findById($userId);
         if (!$updatedUser instanceof \App\Domain\Entity\User) {
             // This case should ideally not happen if update($person) was successful
-            throw new RuntimeException('Failed to retrieve updated user data.');
+            throw new RuntimeException('Falha ao recuperar os dados atualizados do usuário.');
         }
 
         return new UserProfileResponseDTO(
@@ -86,15 +86,15 @@ class UploadProfileImageUseCase
     private function validateUploadedFile(UploadedFileInterface $file): void
     {
         if ($file->getError() !== UPLOAD_ERR_OK) {
-            throw new ValidationException('Failed to upload file. Error code: ' . $file->getError());
+            throw new ValidationException('Falha ao enviar o arquivo. Código do erro: ' . $file->getError());
         }
 
         if ($file->getSize() > self::MAX_FILE_SIZE) {
-            throw new ValidationException('File size exceeds the maximum limit of 2MB.');
+            throw new ValidationException('O tamanho do arquivo excede o limite máximo de 2MB.');
         }
 
         if (!\in_array($file->getClientMediaType(), self::ALLOWED_MIME_TYPES, true)) {
-            throw new ValidationException('Invalid file type. Only JPEG, PNG, and GIF are allowed.');
+            throw new ValidationException('Tipo de arquivo inválido. Apenas JPEG, PNG e GIF são permitidos.');
         }
     }
 }

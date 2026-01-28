@@ -36,7 +36,7 @@ class UserController
         $userId = $request->getAttribute('user_id');
         $user = $this->userRepository->findById((int)$userId);
         if (!$user instanceof \App\Domain\Entity\User) {
-            return $this->jsonResponseFactory->fail(message: 'User not found', statusCode: 404);
+            return $this->jsonResponseFactory->fail(message: 'Usuário não encontrado..', statusCode: 404);
         }
 
         $userProfileDTO = UserProfileResponseDTO::fromEntity($user);

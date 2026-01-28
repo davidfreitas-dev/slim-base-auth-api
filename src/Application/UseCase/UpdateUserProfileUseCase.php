@@ -31,7 +31,7 @@ class UpdateUserProfileUseCase
     {
         $user = $this->userRepository->findById($dto->userId);
         if (!$user instanceof \App\Domain\Entity\User) {
-            throw new NotFoundException('User not found');
+            throw new NotFoundException('Usuário não encontrado.');
         }
 
         $person = $user->getPerson();
@@ -49,7 +49,7 @@ class UpdateUserProfileUseCase
                 // Check if email already exists for another person
                 $existingPerson = $this->personRepository->findByEmail($dto->email);
                 if ($existingPerson && $existingPerson->getId() !== $person->getId()) {
-                    throw new ValidationException('Email already registered by another user.');
+                    throw new ValidationException('O e-mail já está cadastrado por outro usuário.');
                 }
 
                 $person->setEmail($dto->email);
@@ -65,7 +65,7 @@ class UpdateUserProfileUseCase
                 // Check if CPF/CNPJ already exists for another person
                 $existingPerson = $this->personRepository->findByCpfCnpj($sanitizedCpfCnpj);
                 if ($existingPerson && $existingPerson->getId() !== $person->getId()) {
-                    throw new ValidationException('CPF/CNPJ already registered by another user.');
+                    throw new ValidationException('O CPF/CNPJ já está cadastrado por outro usuário.');
                 }
 
                 $person->setCpfCnpj($sanitizedCpfCnpj);
@@ -120,7 +120,7 @@ class UpdateUserProfileUseCase
         try {
             $uploadedFile->moveTo($destinationPath);
         } catch (Exception $exception) {
-            throw new RuntimeException('Failed to move uploaded file.', 0, $exception);
+            throw new RuntimeException('Falha ao mover o arquivo enviado.', 0, $exception);
         }
 
         // Update the person's profile image path

@@ -26,21 +26,21 @@ class VerifyEmailUseCase
         $verification = $this->userVerificationRepository->findByToken($token);
 
         if (!$verification instanceof \App\Domain\Entity\UserVerification) {
-            throw new NotFoundException('Invalid verification token.');
+            throw new NotFoundException('Token de verificação inválido.');
         }
 
         if ($verification->isUsed()) {
-            throw new ValidationException('Verification token has already been used.');
+            throw new ValidationException('O token de verificação já foi utilizado.');
         }
 
         if ($verification->isExpired()) {
-            throw new ValidationException('Verification token has expired.');
+            throw new ValidationException('O token de verificação expirou.');
         }
 
         $user = $this->userRepository->findById($verification->getUserId());
 
         if (!$user instanceof \App\Domain\Entity\User) {
-            throw new NotFoundException('User not found.');
+            throw new NotFoundException('Usuário não encontrado..');
         }
 
         $wasAlreadyVerified = $user->isVerified();
