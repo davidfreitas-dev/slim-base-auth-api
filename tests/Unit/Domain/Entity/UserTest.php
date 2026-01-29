@@ -8,65 +8,83 @@ use App\Domain\Entity\Person;
 use App\Domain\Entity\Role;
 use App\Domain\Entity\User;
 use DateTimeImmutable;
-use Tests\TestCase;
+use PHPUnit\Framework\TestCase;
 
 class UserTest extends TestCase
 {
-    private Person $person;
-
-    private Role $role;
-
-    protected function setUp(): void
+    private function createPerson(array $data = []): Person
     {
-        parent::setUp();
-        $this->person = new Person(
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            id: 1
-        );
-        $this->role = new Role(
-            id: 1,
-            name: 'user',
-            description: 'User role',
-            createdAt: new DateTimeImmutable(),
-            updatedAt: new DateTimeImmutable()
-        );
+        $defaults = [
+            'name' => 'John Doe',
+            'email' => 'john.doe@example.com',
+            'id' => 1,
+        ];
+        return new Person(...array_merge($defaults, $data));
     }
+
+    private function createRole(array $data = []): Role
+    {
+        $defaults = [
+            'id' => 1,
+            'name' => 'user',
+            'description' => 'User role',
+            'createdAt' => new DateTimeImmutable(),
+            'updatedAt' => new DateTimeImmutable(),
+        ];
+        return new Role(...array_merge($defaults, $data));
+    }
+
+    private function createUser(array $data = []): User
+    {
+        $person = $data['person'] ?? $this->createPerson();
+        $role = $data['role'] ?? $this->createRole();
+
+        $defaults = [
+            'person' => $person,
+            'role' => $role,
+            'password' => 'password',
+            'isActive' => true,
+            'isVerified' => false,
+            'createdAt' => new DateTimeImmutable(),
+            'updatedAt' => new DateTimeImmutable(),
+        ];
+
+        return new User(...array_merge($defaults, $data));
+    }
+
 
     public function testCanBeInstantiatedAndGettersWork(): void
     {
-        $user = new User(
-            person: $this->person,
-            role: $this->role,
-            password: 'password'
-        );
+        $person = $this->createPerson();
+        $role = $this->createRole();
+        $user = $this->createUser(['person' => $person, 'role' => $role]);
 
         $this->assertInstanceOf(User::class, $user);
         $this->assertSame(1, $user->getId());
-        $this->assertSame($this->person, $user->getPerson());
+        $this->assertSame($person, $user->getPerson());
         $this->assertSame('password', $user->getPassword());
         $this->assertTrue($user->isActive());
         $this->assertFalse($user->isVerified());
-        $this->assertSame($this->role, $user->getRole());
+        $this->assertSame($role, $user->getRole());
         $this->assertInstanceOf(DateTimeImmutable::class, $user->getCreatedAt());
         $this->assertInstanceOf(DateTimeImmutable::class, $user->getUpdatedAt());
         $this->assertSame('john.doe@example.com', $user->getEmail());
     }
 
-    public function testSetPasswordUpdatesPasswordAndUpdatedAt(): void
+    public function testSetPasswordUpdatesPasswordAndTouches(): void
     {
-        $user = new User($this->person, $this->role, 'password');
+        $user = $this->createUser();
         $initialUpdatedAt = $user->getUpdatedAt();
         sleep(1);
         $user->setPassword('new-password');
 
         $this->assertSame('new-password', $user->getPassword());
-        $this->assertNotEquals($initialUpdatedAt, $user->getUpdatedAt());
+        $this->assertNotSame($initialUpdatedAt->getTimestamp(), $user->getUpdatedAt()->getTimestamp());
     }
 
     public function testActivateAndDeactivateWork(): void
     {
-        $user = new User($this->person, $this->role, 'password', isActive: false);
+        $user = $this->createUser(['isActive' => false]);
         $this->assertFalse($user->isActive());
 
         $user->activate();
@@ -76,9 +94,10 @@ class UserTest extends TestCase
         $this->assertFalse($user->isActive());
     }
 
-            public function testMarkAsVerifiedAndUnverifiedWork(): void
-            {
-                $user = new User($this->person, $this->role, 'password');        $this->assertFalse($user->isVerified());
+    public function testMarkAsVerifiedAndUnverifiedWork(): void
+    {
+        $user = $this->createUser(['isVerified' => false]);
+        $this->assertFalse($user->isVerified());
 
         $user->markAsVerified();
         $this->assertTrue($user->isVerified());
@@ -87,24 +106,47 @@ class UserTest extends TestCase
         $this->assertFalse($user->isVerified());
     }
 
-    public function testSetRoleUpdatesRole(): void
+    public function testSetRoleUpdatesRoleAndTouches(): void
     {
-        $user = new User($this->person, $this->role, 'password');
-        $newRole = new Role(2, 'admin', 'Admin', new DateTimeImmutable(), new DateTimeImmutable());
+        $user = $this->createUser();
+        $initialUpdatedAt = $user->getUpdatedAt();
+        $newRole = $this->createRole(['id' => 2, 'name' => 'admin']);
+        sleep(1);
         $user->setRole($newRole);
 
         $this->assertSame($newRole, $user->getRole());
+        $this->assertNotSame($initialUpdatedAt->getTimestamp(), $user->getUpdatedAt()->getTimestamp());
     }
 
-    public function testToArrayReturnsCorrectArray(): void
+    public function testToArrayAndJsonSerializeReturnCorrectArray(): void
     {
-        $user = new User($this->person, $this->role, 'password');
-        $array = $user->toArray();
+        $person = $this->createPerson([
+            'phone' => '123456',
+            'avatarUrl' => 'http://my.avatar'
+        ]);
+        $createdAt = new DateTimeImmutable('-1 day');
+        $updatedAt = new DateTimeImmutable();
+        $user = $this->createUser([
+            'person' => $person,
+            'createdAt' => $createdAt,
+            'updatedAt' => $updatedAt,
+        ]);
 
-        $this->assertIsArray($array);
-        $this->assertSame($this->person->getId(), $array['id']);
-        $this->assertSame($this->person->getName(), $array['name']);
-        $this->assertSame($this->role->getId(), $array['role_id']);
+        $personArray = $person->toArray();
+        unset($personArray['id']);
+
+        $expected = array_merge([
+            'id' => $user->getId(),
+            'role_id' => $user->getRole()->getId(),
+            'role_name' => $user->getRole()->getName(),
+            'is_active' => $user->isActive(),
+            'is_verified' => $user->isVerified(),
+            'created_at' => $createdAt->format('Y-m-d H:i:s'),
+            'updated_at' => $updatedAt->format('Y-m-d H:i:s'),
+        ], $personArray);
+
+        $this->assertEquals($expected, $user->toArray());
+        $this->assertEquals($expected, $user->jsonSerialize());
     }
 
     public function testFromArrayCreatesUserInstance(): void
@@ -132,5 +174,10 @@ class UserTest extends TestCase
         $this->assertSame($data['name'], $user->getPerson()->getName());
         $this->assertSame($data['password'], $user->getPassword());
         $this->assertSame($data['role_id'], $user->getRole()->getId());
+        $this->assertSame($data['role_name'], $user->getRole()->getName());
+        $this->assertSame($data['is_active'], $user->isActive());
+        $this->assertSame($data['is_verified'], $user->isVerified());
+        $this->assertSame($data['created_at'], $user->getCreatedAt()->format('Y-m-d H:i:s'));
+        $this->assertSame($data['updated_at'], $user->getUpdatedAt()->format('Y-m-d H:i:s'));
     }
 }

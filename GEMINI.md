@@ -94,6 +94,40 @@ docker compose exec api composer test:coverage
 docker compose exec api vendor/bin/phpunit tests/Unit/Domain/Entity/UserTest.php
 ```
 
+### Detailed Test Development Workflow
+
+When developing tests or improving coverage, the following commands and workflow are useful:
+
+1.  **Run a specific test file with text coverage:**
+    ```bash
+    # Run a single test file and display a text-based coverage summary for a specific source directory.
+    # Replace `path/to/YourTest.php` with the actual path to the test file.
+    # Replace `src/Your/Module` with the corresponding source directory for coverage filtering.
+    docker compose exec api vendor/bin/phpunit tests/Unit/Domain/Entity/YourTest.php --coverage-filter src/Domain/Entity --coverage-text
+    ```
+    *   **Tip:** If you get a "No filter is configured" warning, ensure `--coverage-filter` is correctly pointing to the *source directory* (e.g., `src/Domain/Entity`), not just the test file.
+
+2.  **Inspect detailed HTML coverage reports:**
+    ```bash
+    # Generate the full HTML code coverage report (usually into tools/coverage/)
+    docker compose exec api composer test:coverage
+
+    # To view the summary for a specific module (e.g., Domain), you can 'cat' the index.html:
+    cat tools/coverage/Domain/index.html
+
+    # To inspect line-by-line coverage for a specific class (e.g., ErrorLog), 'cat' its HTML file:
+    cat tools/coverage/Domain/Entity/ErrorLog.php.html
+    ```
+    *   **Note:** Coverage reports are often ignored by `.gitignore`. Using `cat` directly via `run_shell_command` is a reliable way to inspect them within the agent environment.
+
+3.  **Iterative Test Development Cycle:**
+    *   **Identify gaps:** Use coverage reports (HTML or text) to find untested lines/methods/classes.
+    *   **Read source & existing test:** Understand the code and current test approach.
+    *   **Write/Refactor test:** Add new test cases or improve existing ones to cover identified gaps.
+    *   **Run specific test with coverage:** Use the command above to quickly verify your changes and new coverage locally.
+    *   **Debug:** If tests fail, analyze output. Pay attention to `TypeErrors` which might indicate bugs in the main codebase (as seen with `Person.php`).
+    *   **Repeat:** Continue until desired coverage for the component is achieved.
+
 ### Code Quality Commands
 
 ```bash
