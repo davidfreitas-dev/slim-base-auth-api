@@ -12,8 +12,8 @@ class ErrorLogListResponseDTO
     public function __construct(
         public readonly array $errorLogs,
         public readonly int $total,
-        public readonly int $limit,
-        public readonly int $offset,
+        public readonly int $page,
+        public readonly int $perPage,
     ) {
     }
 }

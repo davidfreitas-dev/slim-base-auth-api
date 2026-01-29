@@ -335,6 +335,7 @@ return [
         $c->get(ListErrorLogsUseCase::class),
         $c->get(GetErrorLogDetailsUseCase::class),
         $c->get(ResolveErrorLogUseCase::class),
+        $c->get(LoggerInterface::class),
     ),
 
     // Symfony Validator

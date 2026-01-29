@@ -10,6 +10,8 @@ use App\Application\UseCase\ResolveErrorLogUseCase;
 use App\Infrastructure\Http\Response\JsonResponseFactory;
 use Psr\Http\Message\ResponseInterface as Response;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use Psr\Log\LoggerInterface;
+use Throwable;
 
 class ErrorLogController
 {
@@ -18,6 +20,7 @@ class ErrorLogController
         private readonly ListErrorLogsUseCase $listErrorLogsUseCase,
         private readonly GetErrorLogDetailsUseCase $getErrorLogDetailsUseCase,
         private readonly ResolveErrorLogUseCase $resolveErrorLogUseCase,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -31,19 +34,24 @@ class ErrorLogController
      */
     public function listErrorLogs(Request $request, Response $response): Response
     {
-        $queryParams = $request->getQueryParams();
-        $page = (int)($queryParams['page'] ?? 1);
-        $perPage = (int)($queryParams['per_page'] ?? 20);
-        $severity = $queryParams['severity'] ?? null;
-        $resolved = isset($queryParams['resolved']) ? \filter_var($queryParams['resolved'], FILTER_VALIDATE_BOOLEAN) : null;
+        try {
+            $queryParams = $request->getQueryParams();
+            $page = (int)($queryParams['page'] ?? 1);
+            $perPage = (int)($queryParams['per_page'] ?? 20);
+            $severity = $queryParams['severity'] ?? null;
+            $resolved = isset($queryParams['resolved']) ? \filter_var($queryParams['resolved'], FILTER_VALIDATE_BOOLEAN) : null;
 
-        $errors = $this->listErrorLogsUseCase->execute($page, $perPage, $severity, $resolved);
+            $errors = $this->listErrorLogsUseCase->execute($page, $perPage, $severity, $resolved);
 
-        return $this->jsonResponseFactory->success(
-            $errors,
-            'Error logs retrieved successfully',
-            200,
-        );
+            return $this->jsonResponseFactory->success(
+                $errors,
+                'Error logs retrieved successfully',
+                200,
+            );
+        } catch (Throwable $e) {
+            $this->logger->error('An unexpected error occurred while listing error logs', ['exception' => $e]);
+            return $this->jsonResponseFactory->error('An unexpected error occurred.', null, 500);
+        }
     }
 
     /**
@@ -57,22 +65,27 @@ class ErrorLogController
      */
     public function getErrorLogDetails(Request $request, Response $response, array $args): Response
     {
-        $errorLogId = (int)$args['id'];
-        $errorLog = $this->getErrorLogDetailsUseCase->execute($errorLogId);
+        try {
+            $errorLogId = (int)$args['id'];
+            $errorLog = $this->getErrorLogDetailsUseCase->execute($errorLogId);
 
-        if (!$errorLog) {
-            return $this->jsonResponseFactory->error(
-                'Error log not found',
-                null,
-                404,
+            if (!$errorLog) {
+                return $this->jsonResponseFactory->error(
+                    'Error log not found',
+                    null,
+                    404,
+                );
+            }
+
+            return $this->jsonResponseFactory->success(
+                $errorLog,
+                'Error log details retrieved successfully',
+                200,
             );
+        } catch (Throwable $e) {
+            $this->logger->error('An unexpected error occurred while getting error log details', ['exception' => $e]);
+            return $this->jsonResponseFactory->error('An unexpected error occurred.', null, 500);
         }
-
-        return $this->jsonResponseFactory->success(
-            $errorLog,
-            'Error log details retrieved successfully',
-            200,
-        );
     }
 
     /**
@@ -86,24 +99,29 @@ class ErrorLogController
      */
     public function resolveErrorLog(Request $request, Response $response, array $args): Response
     {
-        $errorLogId = (int)$args['id'];
+        try {
+            $errorLogId = (int)$args['id'];
 
-        $resolvedByUserId = $request->getAttribute('user_id');
+            $resolvedByUserId = $request->getAttribute('user_id');
 
-        $success = $this->resolveErrorLogUseCase->execute($errorLogId, $resolvedByUserId);
+            $success = $this->resolveErrorLogUseCase->execute($errorLogId, $resolvedByUserId);
 
-        if (!$success) {
-            return $this->jsonResponseFactory->error(
-                'Error log not found or could not be resolved',
+            if (!$success) {
+                return $this->jsonResponseFactory->error(
+                    'Error log not found or could not be resolved',
+                    null,
+                    404,
+                );
+            }
+
+            return $this->jsonResponseFactory->success(
                 null,
-                404,
+                'Error log resolved successfully',
+                200,
             );
+        } catch (Throwable $e) {
+            $this->logger->error('An unexpected error occurred while resolving error log', ['exception' => $e]);
+            return $this->jsonResponseFactory->error('An unexpected error occurred.', null, 500);
         }
-
-        return $this->jsonResponseFactory->success(
-            null,
-            'Error log resolved successfully',
-            200,
-        );
     }
 }

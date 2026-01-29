@@ -36,7 +36,7 @@ class UserVerificationRepository implements UserVerificationRepositoryInterface
         $stmt = $this->pdo->prepare($sql);
         $stmt->execute(['token' => $token]);
 
-        $data = $stmt->fetch();
+        $data = $stmt->fetch(PDO::FETCH_ASSOC);
 
         if (!$data) {
             return null;

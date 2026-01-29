@@ -47,7 +47,7 @@ class PHPMailerServiceTest extends TestCase
         // Use reflection to replace the mailer instance with our mock
         $reflection = new ReflectionClass($this->mailerService);
         $mailerProperty = $reflection->getProperty('mailer');
-        $mailerProperty->setAccessible(true);
+
         $mailerProperty->setValue($this->mailerService, $this->mailerMock);
     }
 

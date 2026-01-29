@@ -28,8 +28,9 @@ class CorsMiddleware implements MiddlewareInterface
 
         // Check if origin is allowed
         if (\in_array('*', $allowedOrigins, true) || \in_array($origin, $allowedOrigins, true)) {
+            $allowOrigin = \in_array('*', $allowedOrigins, true) ? '*' : $origin;
             $response = $response
-                ->withHeader('Access-Control-Allow-Origin', $origin)
+                ->withHeader('Access-Control-Allow-Origin', $allowOrigin)
                 ->withHeader(
                     'Access-Control-Allow-Methods',
                     \implode(', ', $this->settings['allowed_methods']),

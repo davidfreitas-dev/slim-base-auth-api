@@ -49,8 +49,8 @@ class ListErrorLogsUseCase
         return new ErrorLogListResponseDTO(
             errorLogs: $errorLogDTOs,
             total: $total,
-            limit: $perPage,
-            offset: ($page - 1) * $perPage,
+            page: $page,
+            perPage: $perPage,
         );
     }
 }
