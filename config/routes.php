@@ -17,9 +17,9 @@ use Slim\Routing\RouteCollectorProxy;
 return function (App $app): void {
     $container = $app->getContainer();
 
-    $app->get('/health', [HealthController::class, 'check']);
-
     $app->group('/api/v1', function (RouteCollectorProxy $group) use ($container): void {
+        $group->get('/health', [HealthController::class, 'check']);
+
         $group->group('/auth', function (RouteCollectorProxy $auth): void {
             $auth->post('/register', [AuthController::class, 'register']);
             $auth->post('/login', [AuthController::class, 'login']);

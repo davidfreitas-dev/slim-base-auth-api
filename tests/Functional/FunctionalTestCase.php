@@ -95,4 +95,42 @@ abstract class FunctionalTestCase extends DatabaseTestCase
 
         return $app;
     }
+
+    protected function sendRequestWithFile(
+        string $method,
+        string $path,
+        array $body = [],
+        array $headers = [],
+        array $files = []
+    ): ResponseInterface {
+        $factory = $this->app->getContainer()->get(ServerRequestFactoryInterface::class);
+    
+        $uri = $path;
+        $serverParams = [];
+    
+        $request = $factory->createServerRequest($method, $uri, $serverParams);
+    
+        if (!empty($body)) {
+            $request = $request->withParsedBody($body);
+        }
+    
+        if (!empty($files)) {
+            $request = $request->withUploadedFiles($files);
+        }
+    
+        foreach ($headers as $name => $value) {
+            $request = $request->withHeader($name, $value);
+        }
+    
+        // For file uploads, the content type is typically multipart/form-data
+        // and is handled by the HTTP client/server, so we don't set it manually here.
+    
+        $response = $this->app->handle($request);
+    
+        if ($response->getStatusCode() >= 500) {
+            echo (string) $response->getBody();
+        }
+    
+        return $response;
+    }
 }
