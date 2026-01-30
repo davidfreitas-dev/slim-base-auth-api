@@ -73,7 +73,7 @@ class ForgotPasswordTest extends FunctionalTestCase
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
         $responseData = json_decode($body, true);
         $this->assertArrayHasKey('message', $responseData);
-        $this->assertEquals('If this email exists, a password reset email has been sent.', $responseData['message']);
+        $this->assertEquals('Se este e-mail existir, um e-mail de redefinição de senha foi enviado.', $responseData['message']);
     }
 
     public function testForgotPasswordWithInvalidEmailReturnsOk(): void

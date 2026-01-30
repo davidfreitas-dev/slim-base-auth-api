@@ -26,16 +26,15 @@ class AuthorizationMiddleware implements MiddlewareInterface
         $userRole = $request->getAttribute('user_role'); // This is a string (role name) from JwtAuthMiddleware
 
         if (!$userRole) {
-            return $this->jsonResponseFactory->fail(null, 'Authorization check failed. User role not found in token.', 403);
+            return $this->jsonResponseFactory->fail(null, 'Falha na verificação de autorização. Função de usuário não encontrada no token.', 403);
         }
 
         if ($this->allowedRoles === []) {
-            // This should not happen if the middleware is instantiated correctly.
-            return $this->jsonResponseFactory->fail(null, 'Authorization check failed. Allowed roles not configured for this route.', 500);
+            return $this->jsonResponseFactory->fail(null, 'Falha na verificação de autorização. Funções permitidas não configuradas para esta rota.', 500);
         }
 
         if (!\in_array($userRole, $this->allowedRoles, true)) {
-            return $this->jsonResponseFactory->fail(null, 'Forbidden: Insufficient permissions.', 403);
+            return $this->jsonResponseFactory->fail(null, 'Proibido: Permissões insuficientes.', 403);
         }
 
         return $handler->handle($request);

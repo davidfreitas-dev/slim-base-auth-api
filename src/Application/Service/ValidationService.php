@@ -25,7 +25,7 @@ class ValidationService
             foreach ($violations as $violation) {
                 $errors[] = $violation->getMessage();
             }
-            throw new ValidationException('Validation failed', $errors);
+            throw new ValidationException('Falha na validação', $errors);
         }
     }
 }

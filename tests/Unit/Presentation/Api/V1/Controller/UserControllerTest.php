@@ -190,11 +190,11 @@ class UserControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Usuário não encontrado..'
+            'message' => 'Usuário não encontrado.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('fail')
-            ->with(null, 'Usuário não encontrado..', 404) // Corrected to explicitly pass null for data
+            ->with(null, 'Usuário não encontrado.', 404) // Corrected to explicitly pass null for data
             ->willReturn($mockedResponse);
 
         $response = $this->userController->get($request);
@@ -203,7 +203,7 @@ class UserControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Usuário não encontrado..'
+            'message' => 'Usuário não encontrado.'
         ]), (string)$response->getBody());
     }
 
@@ -262,11 +262,11 @@ class UserControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $responseData,
-            'message' => 'Profile updated successfully.'
+            'message' => 'Perfil atualizado com sucesso.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with($responseData, 'Profile updated successfully.')
+            ->with($responseData, 'Perfil atualizado com sucesso.')
             ->willReturn($mockedResponse);
 
         $response = $this->userController->update($request);
@@ -275,7 +275,7 @@ class UserControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $responseData,
-            'message' => 'Profile updated successfully.'
+            'message' => 'Perfil atualizado com sucesso.'
         ]), (string)$response->getBody());
     }
 
@@ -323,11 +323,11 @@ class UserControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $responseData,
-            'message' => 'Profile updated successfully.'
+            'message' => 'Perfil atualizado com sucesso.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with($responseData, 'Profile updated successfully.')
+            ->with($responseData, 'Perfil atualizado com sucesso.')
             ->willReturn($mockedResponse);
 
         $response = $this->userController->update($request);
@@ -336,7 +336,7 @@ class UserControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $responseData,
-            'message' => 'Profile updated successfully.'
+            'message' => 'Perfil atualizado com sucesso.'
         ]), (string)$response->getBody());
     }
 
@@ -432,11 +432,11 @@ class UserControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('An unexpected error occurred. Please try again later.', null, 500)
+            ->with('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.', null, 500)
             ->willReturn($mockedResponse);
 
         $response = $this->userController->update($request);
@@ -445,7 +445,7 @@ class UserControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]), (string)$response->getBody());
     }
 
@@ -473,11 +473,11 @@ class UserControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Password updated successfully.'
+            'message' => 'Senha atualizada com sucesso.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with(null, 'Password updated successfully.')
+            ->with(null, 'Senha atualizada com sucesso.')
             ->willReturn($mockedResponse);
 
         $response = $this->userController->changePassword($request);
@@ -486,7 +486,7 @@ class UserControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Password updated successfully.'
+            'message' => 'Senha atualizada com sucesso.'
         ]), (string)$response->getBody());
     }
 
@@ -591,11 +591,11 @@ class UserControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('An unexpected error occurred. Please try again later.', null, 500)
+            ->with('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.', null, 500)
             ->willReturn($mockedResponse);
 
         $response = $this->userController->changePassword($request);
@@ -604,7 +604,7 @@ class UserControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]), (string)$response->getBody());
     }
 
@@ -622,11 +622,11 @@ class UserControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Account deleted successfully.'
+            'message' => 'Conta excluída com sucesso.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with(null, 'Account deleted successfully.')
+            ->with(null, 'Conta excluída com sucesso.')
             ->willReturn($mockedResponse);
 
         $response = $this->userController->delete($request);
@@ -635,7 +635,7 @@ class UserControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Account deleted successfully.'
+            'message' => 'Conta excluída com sucesso.'
         ]), (string)$response->getBody());
     }
 

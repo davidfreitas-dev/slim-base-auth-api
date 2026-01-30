@@ -69,7 +69,7 @@ class GetUserUseCaseTest extends TestCase
     public function testShouldThrowNotFoundExceptionWhenUserNotFound(): void
     {
         $this->expectException(NotFoundException::class);
-        $this->expectExceptionMessage('Usuário não encontrado..');
+        $this->expectExceptionMessage('Usuário não encontrado.');
 
         $userId = 999;
         $this->userRepository->expects($this->once())

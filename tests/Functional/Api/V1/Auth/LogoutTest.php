@@ -85,7 +85,7 @@ class LogoutTest extends FunctionalTestCase
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
         $responseData = json_decode($body, true);
         $this->assertArrayHasKey('message', $responseData);
-        $this->assertEquals('Logout successful', $responseData['message']);
+        $this->assertEquals('Logout bem-sucedido', $responseData['message']);
     }
 
     public function testLogoutWithoutTokenReturnsUnauthorized(): void

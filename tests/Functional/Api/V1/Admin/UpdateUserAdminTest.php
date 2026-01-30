@@ -127,7 +127,7 @@ class UpdateUserAdminTest extends FunctionalTestCase
         // Assert
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
         $this->assertEquals('success', $body['status']);
-        $this->assertEquals('User updated successfully.', $body['message']);
+        $this->assertEquals('Usuário atualizado com sucesso.', $body['message']);
         $this->assertArrayHasKey('data', $body);
         $this->assertArrayHasKey('id', $body['data']);
         $this->assertArrayHasKey('name', $body['data']);

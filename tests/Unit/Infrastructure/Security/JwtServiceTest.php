@@ -143,7 +143,7 @@ class JwtServiceTest extends TestCase
             ->willReturn(null);
 
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('Usuário não encontrado.. for JWT generation');
+        $this->expectExceptionMessage('Usuário não encontrado. for JWT generation');
 
         $this->jwtService->generateAccessToken($userId, $email);
     }
@@ -204,7 +204,7 @@ class JwtServiceTest extends TestCase
             ->willReturn(null);
 
         $this->expectException(AuthenticationException::class);
-        $this->expectExceptionMessage('Usuário não encontrado.. for JWT generation');
+        $this->expectExceptionMessage('Usuário não encontrado. for JWT generation');
 
         $this->jwtService->generateRefreshToken($userId);
     }

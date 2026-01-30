@@ -19,11 +19,11 @@ use Tests\TestCase;
 
 class VerifyEmailUseCaseTest extends TestCase
 {
-    private \PHPUnit\Framework\MockObject\MockObject $userVerificationRepository;
+    private UserVerificationRepositoryInterface&MockObject $userVerificationRepository;
 
-    private \PHPUnit\Framework\MockObject\MockObject $userRepository;
+    private UserRepositoryInterface&MockObject $userRepository;
 
-    private \PHPUnit\Framework\MockObject\MockObject $jwtService;
+    private JwtService&MockObject $jwtService;
 
     private VerifyEmailUseCase $verifyEmailUseCase;
 
@@ -41,12 +41,14 @@ class VerifyEmailUseCaseTest extends TestCase
         $token = 'valid-token';
         $userId = 1;
 
+        /** @var UserVerification&MockObject $verification */
         $verification = $this->createMock(UserVerification::class);
         $verification->method('getUserId')->willReturn($userId);
         $verification->method('isUsed')->willReturn(false);
         $verification->method('isExpired')->willReturn(false);
         $this->userVerificationRepository->method('findByToken')->with($token)->willReturn($verification);
 
+        /** @var User&MockObject $user */
         $user = $this->createMock(User::class);
         $user->method('isVerified')->willReturn(false);
         $user->method('getId')->willReturn($userId);
@@ -86,6 +88,7 @@ class VerifyEmailUseCaseTest extends TestCase
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('O token de verificação já foi utilizado.');
 
+        /** @var UserVerification&MockObject $verification */
         $verification = $this->createMock(UserVerification::class);
         $verification->method('isUsed')->willReturn(true);
         $this->userVerificationRepository->method('findByToken')->willReturn($verification);
@@ -98,6 +101,7 @@ class VerifyEmailUseCaseTest extends TestCase
         $this->expectException(ValidationException::class);
         $this->expectExceptionMessage('O token de verificação expirou.');
 
+        /** @var UserVerification&MockObject $verification */
         $verification = $this->createMock(UserVerification::class);
         $verification->method('isUsed')->willReturn(false);
         $verification->method('isExpired')->willReturn(true);
@@ -111,18 +115,19 @@ class VerifyEmailUseCaseTest extends TestCase
         $token = 'valid-token';
         $userId = 1;
 
+        /** @var UserVerification&MockObject $verification */
         $verification = $this->createMock(UserVerification::class);
         $verification->method('getUserId')->willReturn($userId);
         $verification->method('isUsed')->willReturn(false);
         $verification->method('isExpired')->willReturn(false);
         $this->userVerificationRepository->method('findByToken')->with($token)->willReturn($verification);
 
+        /** @var User&MockObject $user */
         $user = $this->createMock(User::class);
-        $user->method('isVerified')->willReturn(true); // User is already verified
+        $user->method('isVerified')->willReturn(true);
         $user->method('getId')->willReturn($userId);
         $this->userRepository->method('findById')->with($userId)->willReturn($user);
 
-        // Should not mark as verified again
         $this->userRepository->expects($this->never())->method('markUserAsVerified');
         $this->userVerificationRepository->expects($this->never())->method('markAsUsed');
 
@@ -144,11 +149,12 @@ class VerifyEmailUseCaseTest extends TestCase
     public function testShouldThrowNotFoundExceptionForNonExistentUser(): void
     {
         $this->expectException(NotFoundException::class);
-        $this->expectExceptionMessage('Usuário não encontrado..');
+        $this->expectExceptionMessage('Usuário não encontrado.');
 
         $token = 'valid-token';
         $userId = 999;
 
+        /** @var UserVerification&MockObject $verification */
         $verification = $this->createMock(UserVerification::class);
         $verification->method('getUserId')->willReturn($userId);
         $verification->method('isUsed')->willReturn(false);

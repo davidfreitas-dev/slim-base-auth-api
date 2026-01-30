@@ -17,13 +17,13 @@ use Tests\TestCase;
 
 class ForgotPasswordUseCaseTest extends TestCase
 {
-    private \PHPUnit\Framework\MockObject\MockObject $userRepository;
+    private UserRepositoryInterface&MockObject $userRepository;
 
-    private \PHPUnit\Framework\MockObject\MockObject $logger;
+    private LoggerInterface&MockObject $logger;
 
-    private \PHPUnit\Framework\MockObject\MockObject $passwordResetRepository;
+    private PasswordResetRepositoryInterface&MockObject $passwordResetRepository;
 
-    private \PHPUnit\Framework\MockObject\MockObject $mailer;
+    private MailerInterface&MockObject $mailer;
 
     private ForgotPasswordUseCase $forgotPasswordUseCase;
 
@@ -46,6 +46,8 @@ class ForgotPasswordUseCaseTest extends TestCase
     public function testShouldSendPasswordResetEmailSuccessfully(): void
     {
         $requestDto = new ForgotPasswordRequestDTO('user@example.com', '127.0.0.1');
+        
+        /** @var User&MockObject $user */
         $user = $this->createMock(User::class);
         $user->method('getEmail')->willReturn('user@example.com');
 

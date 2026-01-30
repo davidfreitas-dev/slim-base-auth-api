@@ -83,7 +83,7 @@ class ChangePasswordUseCaseTest extends TestCase
     public function testShouldThrowNotFoundExceptionIfUserNotFound(): void
     {
         $this->expectException(NotFoundException::class);
-        $this->expectExceptionMessage('Usuário não encontrado..');
+        $this->expectExceptionMessage('Usuário não encontrado.');
 
         $dto = new ChangePasswordRequestDTO(999, 'old-password', 'new-password', 'new-password');
 

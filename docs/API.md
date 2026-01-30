@@ -174,14 +174,14 @@ POST /api/v1/auth/forgot-password
 Valida o código recebido por e-mail.
 
 ```http
-POST /api/v1/auth/validate-reset-token
+POST /api/v1/auth/validate-reset-code
 ```
 
 **Body:**
 ```json
 {
   "email": "joao@example.com",
-  "token": "123456"
+  "code": "123456"
 }
 ```
 
@@ -189,7 +189,7 @@ POST /api/v1/auth/validate-reset-token
 ```json
 {
   "status": "success",
-  "message": "Token is valid."
+  "message": "Code is valid."
 }
 ```
 

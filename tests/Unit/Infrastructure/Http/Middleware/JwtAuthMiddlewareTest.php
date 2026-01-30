@@ -68,7 +68,7 @@ class JwtAuthMiddlewareTest extends TestCase
         $handler = $this->createMock(RequestHandlerInterface::class);
 
         $request->method('getHeaderLine')->with('Authorization')->willReturn('');
-        $this->jsonResponseFactory->expects($this->once())->method('fail')->with(null, 'Invalid Authorization header', 401);
+        $this->jsonResponseFactory->expects($this->once())->method('fail')->with(null, 'Cabeçalho de Autorização inválido', 401);
 
         $this->middleware->process($request, $handler);
     }
@@ -79,7 +79,7 @@ class JwtAuthMiddlewareTest extends TestCase
         $handler = $this->createMock(RequestHandlerInterface::class);
 
         $request->method('getHeaderLine')->with('Authorization')->willReturn('Invalid header');
-        $this->jsonResponseFactory->expects($this->once())->method('fail')->with(null, 'Invalid Authorization header', 401);
+        $this->jsonResponseFactory->expects($this->once())->method('fail')->with(null, 'Cabeçalho de Autorização inválido', 401);
 
         $this->middleware->process($request, $handler);
     }

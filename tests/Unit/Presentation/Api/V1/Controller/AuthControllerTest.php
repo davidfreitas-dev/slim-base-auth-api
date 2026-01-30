@@ -129,13 +129,13 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $expectedResponseData,
-            'message' => 'User registered and logged in successfully. Please check your email to verify your account.'
+            'message' => 'Usuário registrado e logado com sucesso. Por favor, verifique seu e-mail para confirmar sua conta.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
             ->with(
                 $expectedResponseData,
-                'User registered and logged in successfully. Please check your email to verify your account.',
+                'Usuário registrado e logado com sucesso. Por favor, verifique seu e-mail para confirmar sua conta.',
                 201
             )
             ->willReturn($mockedResponse);
@@ -146,7 +146,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $expectedResponseData,
-            'message' => 'User registered and logged in successfully. Please check your email to verify your account.'
+            'message' => 'Usuário registrado e logado com sucesso. Por favor, verifique seu e-mail para confirmar sua conta.'
         ]), (string)$response->getBody());
     }
 
@@ -272,12 +272,12 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'User registered, but failed to send welcome email.'
+            'message' => 'Usuário registrado, mas falha ao enviar e-mail de boas-vindas.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
             ->with(
-                'User registered, but failed to send welcome email.',
+                'Usuário registrado, mas falha ao enviar e-mail de boas-vindas.',
                 null,
                 500
             )
@@ -289,7 +289,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'User registered, but failed to send welcome email.'
+            'message' => 'Usuário registrado, mas falha ao enviar e-mail de boas-vindas.'
         ]), (string)$response->getBody());
     }
 
@@ -317,12 +317,12 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
             ->with(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500
             )
@@ -334,7 +334,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]), (string)$response->getBody());
     }
 
@@ -374,11 +374,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $expectedResponseData,
-            'message' => 'Login successful'
+            'message' => 'Login bem-sucedido'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with($expectedResponseData, 'Login successful')
+            ->with($expectedResponseData, 'Login bem-sucedido')
             ->willReturn($mockedResponse);
 
         $response = $this->authController->login($request);
@@ -387,7 +387,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $expectedResponseData,
-            'message' => 'Login successful'
+            'message' => 'Login bem-sucedido'
         ]), (string)$response->getBody());
     }
 
@@ -487,12 +487,12 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
             ->with(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500
             )
@@ -504,7 +504,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]), (string)$response->getBody());
     }
 
@@ -543,11 +543,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $expectedResponseData,
-            'message' => 'Token refreshed successfully'
+            'message' => 'Token atualizado com sucesso'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with($expectedResponseData, 'Token refreshed successfully')
+            ->with($expectedResponseData, 'Token atualizado com sucesso')
             ->willReturn($mockedResponse);
 
         $response = $this->authController->refresh($request);
@@ -556,7 +556,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $expectedResponseData,
-            'message' => 'Token refreshed successfully'
+            'message' => 'Token atualizado com sucesso'
         ]), (string)$response->getBody());
     }
 
@@ -641,11 +641,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Invalid refresh token'
+            'message' => 'Token de atualização inválido'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('fail')
-            ->with(null, 'Invalid refresh token', 401)
+            ->with(null, 'Token de atualização inválido', 401)
             ->willReturn($mockedResponse);
 
         $response = $this->authController->refresh($request);
@@ -654,7 +654,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Invalid refresh token'
+            'message' => 'Token de atualização inválido'
         ]), (string)$response->getBody());
     }
 
@@ -673,11 +673,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Refresh token has been revoked'
+            'message' => 'Token de atualização foi revogado'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('fail')
-            ->with(null, 'Refresh token has been revoked', 401)
+            ->with(null, 'Token de atualização foi revogado.', 401)
             ->willReturn($mockedResponse);
 
         $response = $this->authController->refresh($request);
@@ -686,7 +686,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Refresh token has been revoked'
+            'message' => 'Token de atualização foi revogado'
         ]), (string)$response->getBody());
     }
 
@@ -706,11 +706,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Usuário não encontrado..'
+            'message' => 'Usuário não encontrado.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('fail')
-            ->with(null, 'Usuário não encontrado..', 404)
+            ->with(null, 'Usuário não encontrado.', 404)
             ->willReturn($mockedResponse);
 
         $response = $this->authController->refresh($request);
@@ -719,7 +719,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Usuário não encontrado..'
+            'message' => 'Usuário não encontrado.'
         ]), (string)$response->getBody());
     }
 
@@ -753,12 +753,12 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
             ->with(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500
             )
@@ -770,7 +770,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]), (string)$response->getBody());
     }
 
@@ -792,11 +792,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Logout successful'
+            'message' => 'Logout bem-sucedido'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with(null, 'Logout successful')
+            ->with(null, 'Logout bem-sucedido')
             ->willReturn($mockedResponse);
 
         $response = $this->authController->logout($request);
@@ -805,7 +805,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Logout successful'
+            'message' => 'Logout bem-sucedido'
         ]), (string)$response->getBody());
     }
 
@@ -832,12 +832,12 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
             ->with(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500
             )
@@ -849,7 +849,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]), (string)$response->getBody());
     }
 
@@ -868,11 +868,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'If this email exists, a password reset email has been sent.'
+            'message' => 'Se este e-mail existir, um e-mail de redefinição de senha foi enviado.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with(null, 'If this email exists, a password reset email has been sent.')
+            ->with(null, 'Se este e-mail existir, um e-mail de redefinição de senha foi enviado.')
             ->willReturn($mockedResponse);
 
         $response = $this->authController->forgotPassword($request);
@@ -881,7 +881,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'If this email exists, a password reset email has been sent.'
+            'message' => 'Se este e-mail existir, um e-mail de redefinição de senha foi enviado.'
         ]), (string)$response->getBody());
     }
 
@@ -942,11 +942,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'Failed to send password reset email. Please try again later.'
+            'message' => 'Falha ao enviar e-mail de redefinição de senha. Por favor, tente novamente mais tarde.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('Failed to send password reset email. Please try again later.', null, 500)
+            ->with('Falha ao enviar e-mail de redefinição de senha. Por favor, tente novamente mais tarde.', null, 500)
             ->willReturn($mockedResponse);
 
         $response = $this->authController->forgotPassword($request);
@@ -955,7 +955,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'Failed to send password reset email. Please try again later.'
+            'message' => 'Falha ao enviar e-mail de redefinição de senha. Por favor, tente novamente mais tarde.'
         ]), (string)$response->getBody());
     }
 
@@ -979,12 +979,12 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
             ->with(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500
             )
@@ -996,7 +996,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]), (string)$response->getBody());
     }
 
@@ -1029,11 +1029,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Code is valid'
+            'message' => 'Código é válido'
         ]));
         $this->jsonResponseFactory->expects($this->exactly(1)) // Changed to exactly(1)
             ->method('success')
-            ->with(null, 'Code is valid')
+            ->with(null, 'Código é válido')
             ->willReturn($mockedResponse);
 
         $response = $this->authController->validateResetCode($request);
@@ -1042,7 +1042,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Code is valid'
+            'message' => 'Código é válido'
         ]), (string)$response->getBody());
     }
 
@@ -1145,12 +1145,12 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]));
         $this->jsonResponseFactory->expects($this->exactly(1))
             ->method('error')
             ->with(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500
             )
@@ -1162,7 +1162,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]), (string)$response->getBody());
     }
 
@@ -1202,12 +1202,12 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Password reset successfully'
+            'message' => 'Senha redefinida com sucesso'
         ]));
 
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with(null, 'Password reset successfully')
+            ->with(null, 'Senha redefinida com sucesso')
             ->willReturn($mockedResponse);
 
         $response = $this->authController->resetPassword($request);
@@ -1216,7 +1216,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Password reset successfully'
+            'message' => 'Senha redefinida com sucesso'
         ]), (string)$response->getBody());
     }
 
@@ -1320,12 +1320,12 @@ class AuthControllerTest extends TestCase
         $mockedResponse = (new ResponseFactory())->createResponse(500);
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]));
 
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('An unexpected error occurred. Please try again later.', null, 500)
+            ->with('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.', null, 500)
             ->willReturn($mockedResponse);
 
         $response = $this->authController->resetPassword($request);
@@ -1333,7 +1333,7 @@ class AuthControllerTest extends TestCase
         $this->assertEquals(500, $response->getStatusCode());
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]), (string)$response->getBody());
     }
 
@@ -1360,11 +1360,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $tokenData,
-            'message' => 'Email already verified.'
+            'message' => 'E-mail já verificado.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with($tokenData, 'Email already verified.')
+            ->with($tokenData, 'E-mail já verificado.')
             ->willReturn($mockedResponse);
 
         $response = $this->authController->verifyEmail($request);
@@ -1373,7 +1373,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $tokenData,
-            'message' => 'Email already verified.'
+            'message' => 'E-mail já verificado.'
         ]), (string)$response->getBody());
     }
 
@@ -1400,11 +1400,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $tokenData,
-            'message' => 'Email verified successfully.'
+            'message' => 'E-mail verificado com sucesso.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with($tokenData, 'Email verified successfully.')
+            ->with($tokenData, 'E-mail verificado com sucesso.')
             ->willReturn($mockedResponse);
 
         $response = $this->authController->verifyEmail($request);
@@ -1413,7 +1413,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $tokenData,
-            'message' => 'Email verified successfully.'
+            'message' => 'E-mail verificado com sucesso.'
         ]), (string)$response->getBody());
     }
 
@@ -1426,11 +1426,11 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Verification token is missing.'
+            'message' => 'Token de verificação está faltando.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('fail')
-            ->with(null, 'Verification token is missing.', 400)
+            ->with(null, 'Token de verificação está faltando.', 400)
             ->willReturn($mockedResponse);
 
         $response = $this->authController->verifyEmail($request);
@@ -1439,7 +1439,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Verification token is missing.'
+            'message' => 'Token de verificação está faltando.'
         ]), (string)$response->getBody());
     }
 
@@ -1528,12 +1528,12 @@ class AuthControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
             ->with(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500
             )
@@ -1545,7 +1545,7 @@ class AuthControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred. Please try again later.'
+            'message' => 'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.'
         ]), (string)$response->getBody());
     }
 }

@@ -106,7 +106,7 @@ class UpdateProfileTest extends FunctionalTestCase
         // Assert
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
         $this->assertEquals('success', $responseData['status']);
-        $this->assertEquals('Profile updated successfully.', $responseData['message']);
+        $this->assertEquals('Perfil atualizado com sucesso.', $responseData['message']);
         $this->assertArrayHasKey('data', $responseData);
         $this->assertArrayHasKey('id', $responseData['data']);
         $this->assertArrayHasKey('name', $responseData['data']);

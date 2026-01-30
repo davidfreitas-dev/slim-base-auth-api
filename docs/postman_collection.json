@@ -11,11 +11,13 @@
                 "method": "GET",
                 "header": [],
                 "url": {
-                    "raw": "{{baseUrl}}/health",
+                    "raw": "{{baseUrl}}/api/v1/health",
                     "host": [
                         "{{baseUrl}}"
                     ],
                     "path": [
+                        "api",
+                        "v1",
                         "health"
                     ]
                 }
@@ -175,13 +177,13 @@
                     "response": []
                 },
                 {
-                    "name": "Validate Reset Token",
+                    "name": "Validate Reset Code",
                     "request": {
                         "method": "POST",
                         "header": [],
                         "body": {
                             "mode": "raw",
-                            "raw": "{\n    \"email\": \"customer@example.com\",\n    \"token\": \"123456\"\n}",
+                            "raw": "{\n    \"email\": \"customer@example.com\",\n    \"code\": \"123456\"\n}",
                             "options": {
                                 "raw": {
                                     "language": "json"
@@ -189,7 +191,7 @@
                             }
                         },
                         "url": {
-                            "raw": "{{baseUrl}}/api/v1/auth/validate-reset-token",
+                            "raw": "{{baseUrl}}/api/v1/auth/validate-reset-code",
                             "host": [
                                 "{{baseUrl}}"
                             ],
@@ -197,7 +199,7 @@
                                 "api",
                                 "v1",
                                 "auth",
-                                "validate-reset-token"
+                                "validate-reset-code"
                             ]
                         }
                     },

@@ -128,6 +128,6 @@ class DeleteUserTest extends FunctionalTestCase
         // Assert
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
         $this->assertEquals('success', $body['status']);
-        $this->assertEquals('User deleted successfully.', $body['message']);
+        $this->assertEquals('Usuário excluído com sucesso.', $body['message']);
     }
 }

@@ -52,7 +52,7 @@ class AdminController
                 'is_verified' => $userResponseDto->isVerified,
             ];
 
-            return $this->jsonResponseFactory->success($responseData, 'User created successfully.', 201);
+            return $this->jsonResponseFactory->success($responseData, 'Usuário criado com sucesso.', 201);
         } catch (ConflictException | NotFoundException | ValidationException $e) {
             $this->logger->warning('Admin user creation failed: ' . $e->getMessage());
 
@@ -60,8 +60,8 @@ class AdminController
             return $this->jsonResponseFactory->fail($errors, $e->getMessage(), $e->getStatusCode());
         } catch (Throwable $e) {
             $this->logger->error('An unexpected error occurred during admin user creation', ['exception' => $e]);
-
-            return $this->jsonResponseFactory->error('An unexpected error occurred.');
+            
+            return $this->jsonResponseFactory->error('Ocorreu um erro inesperado.');
         }
     }
 
@@ -120,7 +120,7 @@ class AdminController
                 'is_verified' => $userResponseDto->isVerified,
             ];
 
-            return $this->jsonResponseFactory->success($responseData, 'User updated successfully.');
+            return $this->jsonResponseFactory->success($responseData, 'Usuário atualizado com sucesso.');
         } catch (NotFoundException | ConflictException | ValidationException $e) {
             $this->logger->warning('Admin user update failed: ' . $e->getMessage());
 
@@ -129,7 +129,7 @@ class AdminController
         } catch (Throwable $e) {
             $this->logger->error('An unexpected error occurred during admin user update', ['exception' => $e]);
 
-            return $this->jsonResponseFactory->error('An unexpected error occurred.');
+            return $this->jsonResponseFactory->error('Ocorreu um erro inesperado.');
         }
     }
 
@@ -139,19 +139,19 @@ class AdminController
         $requestingUserId = $request->getAttribute('user_id');
 
         if ($userId === (int)$requestingUserId) {
-            return $this->jsonResponseFactory->fail(null, 'Admins cannot delete their own account.', 403);
+            return $this->jsonResponseFactory->fail(null, 'Administradores não podem excluir a própria conta.', 403);
         }
 
         try {
             $this->deleteUserUseCase->execute($userId);
 
-            return $this->jsonResponseFactory->success(null, 'User deleted successfully.');
+            return $this->jsonResponseFactory->success(null, 'Usuário excluído com sucesso.');
         } catch (NotFoundException $e) {
             return $this->jsonResponseFactory->fail(null, $e->getMessage(), 404);
         } catch (Throwable $e) {
             $this->logger->error('An unexpected error occurred during user deletion', ['exception' => $e]);
 
-            return $this->jsonResponseFactory->error('An unexpected error occurred.');
+            return $this->jsonResponseFactory->error('Ocorreu um erro inesperado.');
         }
     }
 }

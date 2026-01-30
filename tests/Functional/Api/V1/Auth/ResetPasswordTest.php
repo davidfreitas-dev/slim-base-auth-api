@@ -85,7 +85,7 @@ class ResetPasswordTest extends FunctionalTestCase
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
         $responseData = json_decode($body, true);
         $this->assertArrayHasKey('message', $responseData);
-        $this->assertEquals('Password reset successfully', $responseData['message']);
+        $this->assertEquals('Senha redefinida com sucesso', $responseData['message']);
 
         // Verify the password was actually changed
         $updatedUser = $this->userRepository->findByEmail($email);

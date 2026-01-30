@@ -29,7 +29,7 @@ class JwtAuthMiddleware implements MiddlewareInterface
         $authHeader = $request->getHeaderLine('Authorization');
 
         if ($authHeader === '' || $authHeader === '0' || !\preg_match('/Bearer\s+(.*)$/i', $authHeader, $matches)) {
-            return $this->jsonResponseFactory->fail(null, 'Invalid Authorization header', 401);
+            return $this->jsonResponseFactory->fail(null, 'Cabeçalho de Autorização inválido', 401);
         }
 
         try {
@@ -37,13 +37,13 @@ class JwtAuthMiddleware implements MiddlewareInterface
             $decoded = $this->jwtService->validateToken($token);
 
             if ($decoded->type !== 'access') {
-                throw new AuthenticationException('Invalid token type');
+                throw new AuthenticationException('Tipo de token inválido');
             }
 
             // Verify if the user still exists and is active
             $user = $this->userRepository->findById((int)$decoded->sub);
             if (!$user instanceof \App\Domain\Entity\User) {
-                throw new AuthenticationException('User associated with token not found or inactive');
+                throw new AuthenticationException('Usuário associado ao token não encontrado ou inativo');
             }
 
             // Add decoded token data to request attributes

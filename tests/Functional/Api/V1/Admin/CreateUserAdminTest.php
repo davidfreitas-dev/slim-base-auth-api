@@ -141,7 +141,7 @@ class CreateUserAdminTest extends FunctionalTestCase
         // Assert
         $this->assertEquals(StatusCodeInterface::STATUS_CREATED, $response->getStatusCode());
         $this->assertEquals('success', $body['status']);
-        $this->assertEquals('User created successfully.', $body['message']);
+        $this->assertEquals('Usuário criado com sucesso.', $body['message']);
         $this->assertArrayHasKey('data', $body);
         $this->assertArrayHasKey('id', $body['data']);
         $this->assertArrayHasKey('name', $body['data']);

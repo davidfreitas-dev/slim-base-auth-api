@@ -40,7 +40,7 @@ class VerifyEmailUseCase
         $user = $this->userRepository->findById($verification->getUserId());
 
         if (!$user instanceof \App\Domain\Entity\User) {
-            throw new NotFoundException('Usuário não encontrado..');
+            throw new NotFoundException('Usuário não encontrado.');
         }
 
         $wasAlreadyVerified = $user->isVerified();

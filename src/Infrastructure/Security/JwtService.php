@@ -40,7 +40,7 @@ class JwtService
 
         $user = $this->userRepository->findById($userId);
         if (!$user instanceof \App\Domain\Entity\User) {
-            throw new AuthenticationException('Usuário não encontrado.. for JWT generation');
+            throw new AuthenticationException('Usuário não encontrado. for JWT generation');
         }
 
         $payload = [
@@ -66,7 +66,7 @@ class JwtService
 
         $user = $this->userRepository->findById($userId);
         if (!$user instanceof \App\Domain\Entity\User) {
-            throw new AuthenticationException('Usuário não encontrado.. for JWT generation');
+            throw new AuthenticationException('Usuário não encontrado. for JWT generation');
         }
 
         $payload = [

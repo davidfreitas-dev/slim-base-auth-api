@@ -82,7 +82,7 @@ class AuthController
 
             return $this->jsonResponseFactory->success(
                 $responseData,
-                'User registered and logged in successfully. Please check your email to verify your account.',
+                'Usuário registrado e logado com sucesso. Por favor, verifique seu e-mail para confirmar sua conta.',
                 201,
             );
         } catch (ConflictException $e) {
@@ -97,7 +97,7 @@ class AuthController
             $this->logger->error('Failed to send welcome email', ['exception' => $e]);
 
             return $this->jsonResponseFactory->error(
-                'User registered, but failed to send welcome email.',
+                'Usuário registrado, mas falha ao enviar e-mail de boas-vindas.',
                 null,
                 500,
             );
@@ -105,7 +105,7 @@ class AuthController
             $this->logger->error('An unexpected error occurred during user registration', ['exception' => $e]);
 
             return $this->jsonResponseFactory->error(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500,
             );
@@ -126,7 +126,7 @@ class AuthController
                 JsonResponseKey::EXPIRES_IN->value => $loginResponseDto->expiresIn,
             ];
 
-            return $this->jsonResponseFactory->success($responseData, 'Login successful');
+            return $this->jsonResponseFactory->success($responseData, 'Login bem-sucedido');
         } catch (ValidationException $e) {
             $this->logger->warning('User login validation failed', ['exception' => $e]);
 
@@ -139,7 +139,7 @@ class AuthController
             $this->logger->error('An unexpected error occurred during user login', ['exception' => $e]);
 
             return $this->jsonResponseFactory->error(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500,
             );
@@ -154,16 +154,16 @@ class AuthController
             $decoded = $this->jwtService->validateToken($refreshToken);
 
             if (JwtTokenType::REFRESH->value !== $decoded->type) {
-                return $this->jsonResponseFactory->fail(null, 'Invalid refresh token', 401);
+                return $this->jsonResponseFactory->fail(null, 'Token de atualização inválido', 401);
             }
 
             if (!$this->jwtService->isRefreshTokenValid($decoded->jti)) {
-                return $this->jsonResponseFactory->fail(null, 'Refresh token has been revoked', 401);
+                return $this->jsonResponseFactory->fail(null, 'Token de atualização foi revogado.', 401);
             }
 
             $user = $this->userRepository->findById((int)$decoded->sub);
             if (!$user instanceof \App\Domain\Entity\User) {
-                return $this->jsonResponseFactory->fail(null, 'Usuário não encontrado..', 404);
+                return $this->jsonResponseFactory->fail(null, 'Usuário não encontrado.', 404);
             }
 
             // Invalidate the old refresh token
@@ -180,13 +180,13 @@ class AuthController
                 JsonResponseKey::EXPIRES_IN->value => $this->jwtService->getAccessTokenExpire(),
             ];
 
-            return $this->jsonResponseFactory->success($tokenData, 'Token refreshed successfully');
+            return $this->jsonResponseFactory->success($tokenData, 'Token atualizado com sucesso');
         } catch (\App\Domain\Exception\AuthenticationException $e) {
             return $this->jsonResponseFactory->fail(null, $e->getMessage(), 401);
         } catch (Throwable $e) {
             $this->logger->error('An unexpected error occurred during token refresh', ['exception' => $e]);
             return $this->jsonResponseFactory->error(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500,
             );
@@ -200,11 +200,11 @@ class AuthController
             $exp = $request->getAttribute('token_exp');
             $this->jwtService->blockToken($jti, $exp);
 
-            return $this->jsonResponseFactory->success(null, 'Logout successful');
+            return $this->jsonResponseFactory->success(null, 'Logout bem-sucedido');
         } catch (Throwable $e) {
             $this->logger->error('An unexpected error occurred during logout', ['exception' => $e]);
             return $this->jsonResponseFactory->error(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500,
             );
@@ -224,13 +224,13 @@ class AuthController
 
             return $this->jsonResponseFactory->success(
                 null,
-                'If this email exists, a password reset email has been sent.',
+                'Se este e-mail existir, um e-mail de redefinição de senha foi enviado.',
             );
         } catch (EmailSendingFailedException $e) {
             $this->logger->error('Failed to send password reset email', ['exception' => $e]);
 
             return $this->jsonResponseFactory->error(
-                'Failed to send password reset email. Please try again later.',
+                'Falha ao enviar e-mail de redefinição de senha. Por favor, tente novamente mais tarde.',
                 null,
                 500,
             );
@@ -242,7 +242,7 @@ class AuthController
             $this->logger->error('An unexpected error occurred during password reset', ['exception' => $e]);
 
             return $this->jsonResponseFactory->error(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500,
             );
@@ -259,7 +259,7 @@ class AuthController
             $validateRequest = new ValidateResetCodeRequestDTO($email, $code);
             $this->validationService->validate($validateRequest);
             $this->validateResetCodeUseCase->execute($validateRequest);
-            return $this->jsonResponseFactory->success(null, 'Code is valid');
+            return $this->jsonResponseFactory->success(null, 'Código é válido');
         } catch (NotFoundException $e) {
             $this->logger->warning('Invalid reset code validation attempt', ['exception' => $e]);
 
@@ -272,7 +272,7 @@ class AuthController
             $this->logger->error('An unexpected error occurred during code validation', ['exception' => $e]);
 
             return $this->jsonResponseFactory->error(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500,
             );
@@ -294,7 +294,7 @@ class AuthController
 
             $this->resetPasswordUseCase->execute($passwordResetResponseDto, $resetPasswordDto);
 
-            return $this->jsonResponseFactory->success(null, 'Password reset successfully');
+            return $this->jsonResponseFactory->success(null, 'Senha redefinida com sucesso');
         } catch (NotFoundException $e) {
             $this->logger->warning('Password reset failed due to invalid code', ['exception' => $e]);
 
@@ -307,7 +307,7 @@ class AuthController
             $this->logger->error('An unexpected error occurred during password reset', ['exception' => $e]);
 
             return $this->jsonResponseFactory->error(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500,
             );
@@ -319,15 +319,15 @@ class AuthController
         $token = $request->getQueryParams()['token'] ?? '';
 
         if (empty($token)) {
-            return $this->jsonResponseFactory->fail(null, 'Verification token is missing.', 400);
+            return $this->jsonResponseFactory->fail(null, 'Token de verificação está faltando.', 400);
         }
 
         try {
             $result = $this->verifyEmailUseCase->execute($token);
 
             $message = $result->wasAlreadyVerified()
-                ? 'Email already verified.'
-                : 'Email verified successfully.';
+                ? 'E-mail já verificado.'
+                : 'E-mail verificado com sucesso.';
 
             return $this->jsonResponseFactory->success(
                 $result->getTokenData(),
@@ -345,7 +345,7 @@ class AuthController
             $this->logger->error('An unexpected error occurred during email verification', ['exception' => $e]);
 
             return $this->jsonResponseFactory->error(
-                'An unexpected error occurred. Please try again later.',
+                'Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.',
                 null,
                 500,
             );

@@ -16,13 +16,13 @@ use Tests\TestCase;
 
 class DeleteUserUseCaseTest extends TestCase
 {
-    private \PHPUnit\Framework\MockObject\MockObject $userRepository;
+    private UserRepositoryInterface&MockObject $userRepository;
 
-    private \PHPUnit\Framework\MockObject\MockObject $personRepository;
+    private PersonRepositoryInterface&MockObject $personRepository;
 
-    private \PHPUnit\Framework\MockObject\MockObject $jwtService;
+    private JwtService&MockObject $jwtService;
 
-    private \PHPUnit\Framework\MockObject\MockObject $pdo;
+    private PDO&MockObject $pdo;
 
     private DeleteUserUseCase $deleteUserUseCase;
 
@@ -45,6 +45,8 @@ class DeleteUserUseCaseTest extends TestCase
     public function testShouldDeleteUserSuccessfully(): void
     {
         $userId = 1;
+        
+        /** @var User&MockObject $user */
         $user = $this->createMock(User::class);
         $this->userRepository->method('findById')->with($userId)->willReturn($user);
 
@@ -71,6 +73,8 @@ class DeleteUserUseCaseTest extends TestCase
         $this->expectException(\Exception::class);
 
         $userId = 1;
+        
+        /** @var User&MockObject $user */
         $user = $this->createMock(User::class);
         $this->userRepository->method('findById')->with($userId)->willReturn($user);
 

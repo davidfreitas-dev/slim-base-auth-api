@@ -45,12 +45,12 @@ class ErrorLogController
 
             return $this->jsonResponseFactory->success(
                 $errors,
-                'Error logs retrieved successfully',
+                'Logs de erro recuperados com sucesso',
                 200,
             );
         } catch (Throwable $e) {
             $this->logger->error('An unexpected error occurred while listing error logs', ['exception' => $e]);
-            return $this->jsonResponseFactory->error('An unexpected error occurred.', null, 500);
+            return $this->jsonResponseFactory->error('Ocorreu um erro inesperado.', null, 500);
         }
     }
 
@@ -71,7 +71,7 @@ class ErrorLogController
 
             if (!$errorLog) {
                 return $this->jsonResponseFactory->error(
-                    'Error log not found',
+                    'Log de erro não encontrado',
                     null,
                     404,
                 );
@@ -79,12 +79,12 @@ class ErrorLogController
 
             return $this->jsonResponseFactory->success(
                 $errorLog,
-                'Error log details retrieved successfully',
+                'Detalhes do log de erro recuperados com sucesso',
                 200,
             );
         } catch (Throwable $e) {
             $this->logger->error('An unexpected error occurred while getting error log details', ['exception' => $e]);
-            return $this->jsonResponseFactory->error('An unexpected error occurred.', null, 500);
+            return $this->jsonResponseFactory->error('Ocorreu um erro inesperado.', null, 500);
         }
     }
 
@@ -108,7 +108,7 @@ class ErrorLogController
 
             if (!$success) {
                 return $this->jsonResponseFactory->error(
-                    'Error log not found or could not be resolved',
+                    'Log de erro não encontrado ou não pôde ser resolvido',
                     null,
                     404,
                 );
@@ -116,12 +116,12 @@ class ErrorLogController
 
             return $this->jsonResponseFactory->success(
                 null,
-                'Error log resolved successfully',
+                'Log de erro resolvido com sucesso',
                 200,
             );
         } catch (Throwable $e) {
             $this->logger->error('An unexpected error occurred while resolving error log', ['exception' => $e]);
-            return $this->jsonResponseFactory->error('An unexpected error occurred.', null, 500);
+            return $this->jsonResponseFactory->error('Ocorreu um erro inesperado.', null, 500);
         }
     }
 }

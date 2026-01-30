@@ -107,12 +107,12 @@ class ErrorLogControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $expectedResponseData,
-            'message' => 'Error logs retrieved successfully'
+            'message' => 'Logs de erro recuperados com sucesso'
         ]));
         
         $jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with($errorLogListResponseDTO, 'Error logs retrieved successfully', 200)
+            ->with($errorLogListResponseDTO, 'Logs de erro recuperados com sucesso', 200)
             ->willReturn($mockedResponse);
 
         $errorLogController = new ErrorLogController(
@@ -129,7 +129,7 @@ class ErrorLogControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $expectedResponseData,
-            'message' => 'Error logs retrieved successfully'
+            'message' => 'Logs de erro recuperados com sucesso'
         ]), (string)$response->getBody());
     }
 
@@ -169,12 +169,12 @@ class ErrorLogControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $expectedResponseData,
-            'message' => 'Error logs retrieved successfully'
+            'message' => 'Logs de erro recuperados com sucesso'
         ]));
         
         $jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with($errorLogListResponseDTO, 'Error logs retrieved successfully', 200)
+            ->with($errorLogListResponseDTO, 'Logs de erro recuperados com sucesso', 200)
             ->willReturn($mockedResponse);
 
         $errorLogController = new ErrorLogController(
@@ -191,7 +191,7 @@ class ErrorLogControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $expectedResponseData,
-            'message' => 'Error logs retrieved successfully'
+            'message' => 'Logs de erro recuperados com sucesso'
         ]), (string)$response->getBody());
     }
 
@@ -216,12 +216,12 @@ class ErrorLogControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]));
         
         $jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('An unexpected error occurred.', null, 500)
+            ->with('Ocorreu um erro inesperado.', null, 500)
             ->willReturn($mockedResponse);
 
         $errorLogController = new ErrorLogController(
@@ -238,7 +238,7 @@ class ErrorLogControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]), (string)$response->getBody());
     }
 
@@ -287,12 +287,12 @@ class ErrorLogControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $expectedErrorLogData,
-            'message' => 'Error log details retrieved successfully'
+            'message' => 'Detalhes do log de erro recuperados com sucesso'
         ]));
         
         $jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with($errorLogResponseDto, 'Error log details retrieved successfully', 200)
+            ->with($errorLogResponseDto, 'Detalhes do log de erro recuperados com sucesso', 200)
             ->willReturn($mockedResponse);
 
         $errorLogController = new ErrorLogController(
@@ -309,7 +309,7 @@ class ErrorLogControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $expectedErrorLogData,
-            'message' => 'Error log details retrieved successfully'
+            'message' => 'Detalhes do log de erro recuperados com sucesso'
         ]), (string)$response->getBody());
     }
 
@@ -336,12 +336,12 @@ class ErrorLogControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'Error log not found'
+            'message' => 'Log de erro não encontrado'
         ]));
         
         $jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('Error log not found', null, 404)
+            ->with('Log de erro não encontrado', null, 404)
             ->willReturn($mockedResponse);
 
         $errorLogController = new ErrorLogController(
@@ -358,7 +358,7 @@ class ErrorLogControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'Error log not found'
+            'message' => 'Log de erro não encontrado'
         ]), (string)$response->getBody());
     }
 
@@ -384,12 +384,12 @@ class ErrorLogControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]));
         
         $jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('An unexpected error occurred.', null, 500)
+            ->with('Ocorreu um erro inesperado.', null, 500)
             ->willReturn($mockedResponse);
 
         $errorLogController = new ErrorLogController(
@@ -406,7 +406,7 @@ class ErrorLogControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]), (string)$response->getBody());
     }
 
@@ -440,12 +440,12 @@ class ErrorLogControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Error log resolved successfully'
+            'message' => 'Log de erro resolvido com sucesso'
         ]));
         
         $jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with(null, 'Error log resolved successfully', 200)
+            ->with(null, 'Log de erro resolvido com sucesso', 200)
             ->willReturn($mockedResponse);
 
         $errorLogController = new ErrorLogController(
@@ -462,7 +462,7 @@ class ErrorLogControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'Error log resolved successfully'
+            'message' => 'Log de erro resolvido com sucesso'
         ]), (string)$response->getBody());
     }
 
@@ -495,12 +495,12 @@ class ErrorLogControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'Error log not found or could not be resolved'
+            'message' => 'Log de erro não encontrado ou não pôde ser resolvido'
         ]));
         
         $jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('Error log not found or could not be resolved', null, 404)
+            ->with('Log de erro não encontrado ou não pôde ser resolvido', null, 404)
             ->willReturn($mockedResponse);
 
         $errorLogController = new ErrorLogController(
@@ -517,7 +517,7 @@ class ErrorLogControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'Error log not found or could not be resolved'
+            'message' => 'Log de erro não encontrado ou não pôde ser resolvido'
         ]), (string)$response->getBody());
     }
 
@@ -549,12 +549,12 @@ class ErrorLogControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]));
         
         $jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('An unexpected error occurred.', null, 500)
+            ->with('Ocorreu um erro inesperado.', null, 500)
             ->willReturn($mockedResponse);
 
         $errorLogController = new ErrorLogController(
@@ -571,7 +571,7 @@ class ErrorLogControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]), (string)$response->getBody());
     }
 }

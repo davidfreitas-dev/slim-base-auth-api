@@ -82,7 +82,7 @@ class validateResetCodeTest extends FunctionalTestCase
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
         $responseData = json_decode($body, true);
         $this->assertArrayHasKey('message', $responseData);
-        $this->assertEquals('Code is valid', $responseData['message']);
+        $this->assertEquals('Código é válido', $responseData['message']);
     }
 
     public function testvalidateResetCodeWithInvalidTokenReturnsBadRequest(): void

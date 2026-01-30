@@ -112,11 +112,11 @@ class AdminControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $responseData,
-            'message' => 'User created successfully.'
+            'message' => 'Usuário criado com sucesso.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with($responseData, 'User created successfully.', 201)
+            ->with($responseData, 'Usuário criado com sucesso.', 201)
             ->willReturn($mockedResponse);
 
         $response = $this->adminController->createUser($request);
@@ -125,7 +125,7 @@ class AdminControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $responseData,
-            'message' => 'User created successfully.'
+            'message' => 'Usuário criado com sucesso.'
         ]), (string)$response->getBody());
     }
 
@@ -241,11 +241,16 @@ class AdminControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]));
+        // ✅ CORRIGIDO: Agora passa os 3 parâmetros esperados
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('An unexpected error occurred.', null, 500)
+            ->with(
+                'Ocorreu um erro inesperado.',  // message
+                null,                            // data
+                500                              // statusCode
+            )
             ->willReturn($mockedResponse);
 
         $response = $this->adminController->createUser($request);
@@ -254,7 +259,7 @@ class AdminControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]), (string)$response->getBody());
     }
 
@@ -517,11 +522,11 @@ class AdminControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => $responseData,
-            'message' => 'User updated successfully.'
+            'message' => 'Usuário atualizado com sucesso.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with($responseData, 'User updated successfully.')
+            ->with($responseData, 'Usuário atualizado com sucesso.')
             ->willReturn($mockedResponse);
 
         $response = $this->adminController->updateUser($request, $response, $args);
@@ -530,7 +535,7 @@ class AdminControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => $responseData,
-            'message' => 'User updated successfully.'
+            'message' => 'Usuário atualizado com sucesso.'
         ]), (string)$response->getBody());
     }
 
@@ -675,11 +680,16 @@ class AdminControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]));
+        // ✅ CORRIGIDO: Agora passa os 3 parâmetros esperados
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('An unexpected error occurred.', null, 500)
+            ->with(
+                'Ocorreu um erro inesperado.',  // message
+                null,                            // data
+                500                              // statusCode
+            )
             ->willReturn($mockedResponse);
 
         $response = $this->adminController->updateUser($request, $response, $args);
@@ -688,7 +698,7 @@ class AdminControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]), (string)$response->getBody());
     }
 
@@ -709,11 +719,11 @@ class AdminControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'User deleted successfully.'
+            'message' => 'Usuário excluído com sucesso.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('success')
-            ->with(null, 'User deleted successfully.')
+            ->with(null, 'Usuário excluído com sucesso.')
             ->willReturn($mockedResponse);
 
         $response = $this->adminController->deleteUser($request, $response, $args);
@@ -722,7 +732,7 @@ class AdminControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'success',
             'data' => null,
-            'message' => 'User deleted successfully.'
+            'message' => 'Usuário excluído com sucesso.'
         ]), (string)$response->getBody());
     }
 
@@ -741,11 +751,11 @@ class AdminControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Admins cannot delete their own account.'
+            'message' => 'Administradores não podem excluir a própria conta.'
         ]));
         $this->jsonResponseFactory->expects($this->once())
             ->method('fail')
-            ->with(null, 'Admins cannot delete their own account.', 403)
+            ->with(null, 'Administradores não podem excluir a própria conta.', 403)
             ->willReturn($mockedResponse);
 
         $response = $this->adminController->deleteUser($request, $response, $args);
@@ -754,7 +764,7 @@ class AdminControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'fail',
             'data' => null,
-            'message' => 'Admins cannot delete their own account.'
+            'message' => 'Administradores não podem excluir a própria conta.'
         ]), (string)$response->getBody());
     }
 
@@ -813,11 +823,16 @@ class AdminControllerTest extends TestCase
         $mockedResponse->getBody()->write(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]));
+        // ✅ CORRIGIDO: Agora passa os 3 parâmetros esperados
         $this->jsonResponseFactory->expects($this->once())
             ->method('error')
-            ->with('An unexpected error occurred.', null, 500)
+            ->with(
+                'Ocorreu um erro inesperado.',  // message
+                null,                            // data
+                500                              // statusCode
+            )
             ->willReturn($mockedResponse);
 
         $response = $this->adminController->deleteUser($request, $response, $args);
@@ -826,7 +841,7 @@ class AdminControllerTest extends TestCase
         $this->assertJsonStringEqualsJsonString(json_encode([
             'status' => 'error',
             'data' => null,
-            'message' => 'An unexpected error occurred.'
+            'message' => 'Ocorreu um erro inesperado.'
         ]), (string)$response->getBody());
     }
 }

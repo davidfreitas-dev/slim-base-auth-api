@@ -45,7 +45,7 @@ class AuthorizationMiddlewareTest extends TestCase
         $handler = $this->createMock(RequestHandlerInterface::class);
 
         $request->method('getAttribute')->with('user_role')->willReturn('user');
-        $this->jsonResponseFactory->expects($this->once())->method('fail')->with(null, 'Forbidden: Insufficient permissions.', 403);
+        $this->jsonResponseFactory->expects($this->once())->method('fail')->with(null, 'Proibido: Permissões insuficientes.', 403);
 
         $middleware = new AuthorizationMiddleware(['admin', 'moderator'], $this->jsonResponseFactory);
         $middleware->process($request, $handler);
@@ -57,7 +57,7 @@ class AuthorizationMiddlewareTest extends TestCase
         $handler = $this->createMock(RequestHandlerInterface::class);
 
         $request->method('getAttribute')->with('user_role')->willReturn(null);
-        $this->jsonResponseFactory->expects($this->once())->method('fail')->with(null, 'Authorization check failed. User role not found in token.', 403);
+        $this->jsonResponseFactory->expects($this->once())->method('fail')->with(null, 'Falha na verificação de autorização. Função de usuário não encontrada no token.', 403);
 
         $middleware = new AuthorizationMiddleware(['admin'], $this->jsonResponseFactory);
         $middleware->process($request, $handler);
@@ -69,7 +69,7 @@ class AuthorizationMiddlewareTest extends TestCase
         $handler = $this->createMock(RequestHandlerInterface::class);
 
         $request->method('getAttribute')->with('user_role')->willReturn('admin');
-        $this->jsonResponseFactory->expects($this->once())->method('fail')->with(null, 'Authorization check failed. Allowed roles not configured for this route.', 500);
+        $this->jsonResponseFactory->expects($this->once())->method('fail')->with(null, 'Falha na verificação de autorização. Funções permitidas não configuradas para esta rota.', 500);
 
         $middleware = new AuthorizationMiddleware([], $this->jsonResponseFactory);
         $middleware->process($request, $handler);

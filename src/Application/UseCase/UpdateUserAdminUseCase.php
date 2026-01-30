@@ -33,7 +33,7 @@ class UpdateUserAdminUseCase
         try {
             $user = $this->userRepository->findById($dto->userId);
             if (!$user instanceof \App\Domain\Entity\User) {
-                throw new NotFoundException('Usuário não encontrado..');
+                throw new NotFoundException('Usuário não encontrado.');
             }
 
             // Check for email conflicts

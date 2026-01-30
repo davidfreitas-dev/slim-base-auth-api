@@ -28,7 +28,7 @@ class ChangePasswordUseCase
         $user = $this->userRepository->findById($dto->userId);
 
         if (!$user instanceof \App\Domain\Entity\User) {
-            throw new NotFoundException('Usuário não encontrado..');
+            throw new NotFoundException('Usuário não encontrado.');
         }
 
         if (!$this->passwordHasher->verify($dto->currentPassword, $user->getPassword())) {

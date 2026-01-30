@@ -36,7 +36,7 @@ class UserController
         $userId = $request->getAttribute('user_id');
         $user = $this->userRepository->findById((int)$userId);
         if (!$user instanceof \App\Domain\Entity\User) {
-            return $this->jsonResponseFactory->fail(message: 'Usuário não encontrado..', statusCode: 404);
+            return $this->jsonResponseFactory->fail(message: 'Usuário não encontrado.', statusCode: 404);
         }
 
         $userProfileDTO = UserProfileResponseDTO::fromEntity($user);
@@ -75,13 +75,13 @@ class UserController
                 'avatar_url' => $personResponseDto->avatarUrl,
             ];
 
-            return $this->jsonResponseFactory->success($responseData, 'Profile updated successfully.');
+            return $this->jsonResponseFactory->success($responseData, 'Perfil atualizado com sucesso.');
         } catch (ValidationException $e) {
             return $this->jsonResponseFactory->fail($e->getErrors(), $e->getMessage(), 400);
         } catch (ConflictException $e) {
             return $this->jsonResponseFactory->fail(null, $e->getMessage(), 409);
         } catch (\Exception $e) {
-            return $this->jsonResponseFactory->error('An unexpected error occurred. Please try again later.', null, 500);
+            return $this->jsonResponseFactory->error('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.', null, 500);
         }
     }
 
@@ -95,7 +95,7 @@ class UserController
             $this->validationService->validate($dto);
             $this->changePasswordUseCase->execute($dto);
 
-            return $this->jsonResponseFactory->success(message: 'Password updated successfully.');
+            return $this->jsonResponseFactory->success(message: 'Senha atualizada com sucesso.');
         } catch (ValidationException $e) {
             return $this->jsonResponseFactory->fail($e->getErrors(), $e->getMessage(), 400);
         } catch (NotFoundException $e) {
@@ -103,7 +103,7 @@ class UserController
         } catch (\Exception $e) {
             // Log the exception for debugging purposes
             // $this->logger->error($e->getMessage());
-            return $this->jsonResponseFactory->error('An unexpected error occurred. Please try again later.', null, 500);
+            return $this->jsonResponseFactory->error('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.', null, 500);
         }
     }
 
@@ -114,13 +114,13 @@ class UserController
         try {
             $this->deleteUserUseCase->execute($userId);
 
-            return $this->jsonResponseFactory->success(message: 'Account deleted successfully.');
+            return $this->jsonResponseFactory->success(message: 'Conta excluída com sucesso.');
         } catch (NotFoundException $notFoundException) {
             return $this->jsonResponseFactory->fail(message: $notFoundException->getMessage(), statusCode: 404);
         } catch (\Exception $e) {
             // Log the exception for debugging purposes
             // $this->logger->error($e->getMessage());
-            return $this->jsonResponseFactory->error('An unexpected error occurred. Please try again later.', null, 500);
+            return $this->jsonResponseFactory->error('Ocorreu um erro inesperado. Por favor, tente novamente mais tarde.', null, 500);
         }
     }
 }

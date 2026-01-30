@@ -23,13 +23,13 @@ use App\Domain\Repository\PersonRepositoryInterface;
 
 class UpdateUserAdminUseCaseTest extends TestCase
 {
-    private \PHPUnit\Framework\MockObject\MockObject $pdo;
+    private PDO&MockObject $pdo;
 
-    private \PHPUnit\Framework\MockObject\MockObject $userRepository;
+    private UserRepositoryInterface&MockObject $userRepository;
 
-    private \PHPUnit\Framework\MockObject\MockObject $personRepository;
+    private PersonRepositoryInterface&MockObject $personRepository;
 
-    private \PHPUnit\Framework\MockObject\MockObject $roleRepository;
+    private RoleRepositoryInterface&MockObject $roleRepository;
 
     private UpdateUserAdminUseCase $updateUserAdminUseCase;
 
@@ -74,21 +74,24 @@ class UpdateUserAdminUseCaseTest extends TestCase
             isVerified: $newIsVerified
         );
 
+        /** @var Person&MockObject $mockPerson */
         $mockPerson = $this->createMock(Person::class);
         $mockPerson->method('getId')->willReturn($userId);
-        $mockPerson->method('getName')->willReturn($newName); // Return new name
-        $mockPerson->method('getEmail')->willReturn($newEmail); // Return new email
-        $mockPerson->method('getPhone')->willReturn($newPhone); // Return new phone
-        $mockPerson->method('getCpfCnpj')->willReturn(CpfCnpj::fromString($newCpfCnpj)); // Return new CpfCnpj
+        $mockPerson->method('getName')->willReturn($newName);
+        $mockPerson->method('getEmail')->willReturn($newEmail);
+        $mockPerson->method('getPhone')->willReturn($newPhone);
+        $mockPerson->method('getCpfCnpj')->willReturn(CpfCnpj::fromString($newCpfCnpj));
         $mockPerson->expects($this->once())->method('setName')->with($newName);
         $mockPerson->expects($this->once())->method('setEmail')->with($newEmail);
         $mockPerson->expects($this->once())->method('setPhone')->with($newPhone);
         $mockPerson->expects($this->once())->method('setCpfCnpj')->with(CpfCnpj::fromString($newCpfCnpj));
 
+        /** @var Role&MockObject $mockRole */
         $mockRole = $this->createMock(Role::class);
         $mockRole->method('getName')->willReturn($newRoleName);
         $this->roleRepository->method('findByName')->with($newRoleName)->willReturn($mockRole);
 
+        /** @var User&MockObject $mockUser */
         $mockUser = $this->createMock(User::class);
         $mockUser->method('getId')->willReturn($userId);
         $mockUser->method('getPerson')->willReturn($mockPerson);
@@ -131,12 +134,16 @@ class UpdateUserAdminUseCaseTest extends TestCase
         $this->expectException(ConflictException::class);
         $dto = new UpdateUserAdminRequestDTO(1, 'name', 'conflict@email.com', null, null, 'Role', true, true);
 
+        /** @var Person&MockObject $userPerson */
         $userPerson = $this->createMock(Person::class);
         $userPerson->method('getId')->willReturn(1);
+        
+        /** @var User&MockObject $userMock */
         $userMock = $this->createMock(User::class);
         $userMock->method('getPerson')->willReturn($userPerson);
         $this->userRepository->method('findById')->with(1)->willReturn($userMock);
 
+        /** @var Person&MockObject $conflictingPerson */
         $conflictingPerson = $this->createMock(Person::class);
         $conflictingPerson->method('getId')->willReturn(2);
         $this->personRepository->method('findByEmail')->with('conflict@email.com')->willReturn($conflictingPerson);

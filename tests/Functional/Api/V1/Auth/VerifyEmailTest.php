@@ -79,7 +79,7 @@ class VerifyEmailTest extends FunctionalTestCase
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
         $this->assertNotNull($responseData, 'Response body is not valid JSON: ' . $body);
         $this->assertEquals('success', $responseData['status']);
-        $this->assertEquals('Email verified successfully.', $responseData['message']);
+        $this->assertEquals('E-mail verificado com sucesso.', $responseData['message']);
 
         $updatedUser = $this->userRepository->findById($user->getId());
         $this->assertTrue($updatedUser->isVerified());
@@ -175,7 +175,7 @@ class VerifyEmailTest extends FunctionalTestCase
         $this->assertEquals(StatusCodeInterface::STATUS_OK, $response->getStatusCode());
         $this->assertNotNull($responseData, 'Response body is not valid JSON: ' . $body);
         $this->assertEquals('success', $responseData['status']);
-        $this->assertEquals('Email already verified.', $responseData['message']);
+        $this->assertEquals('E-mail já verificado.', $responseData['message']);
 
         $updatedUser = $this->userRepository->findById($user->getId());
         $this->assertTrue($updatedUser->isVerified());
